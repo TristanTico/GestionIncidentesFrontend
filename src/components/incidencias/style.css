@@ -1,0 +1,40 @@
+
+.header-container {
+  margin-top: 15px; /* Agrega espacio superior para separar del MenuIcon */
+  padding: 5px; /* Agrega espacio alrededor del contenedor del título */
+}
+
+.page-title {
+  font-size: 24px; /* Ajusta el tamaño del título */
+  font-weight: bold; /* Aplica negrita al título */
+  color: #333; /* Color del título */
+}
+
+.divider {
+  height: 1px;
+  background-color: #ccc;
+  margin: 10px 0;
+}
+
+/* src/components/incidencias/IncidenciaModal.css */
+
+.modal-content {
+  padding: 16px;
+}
+
+IonItem {
+  --inner-padding-start: 0;
+  --inner-padding-end: 0;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+}
+
+IonLabel {
+  font-weight: bold;
+}
+
+IonInput {
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
