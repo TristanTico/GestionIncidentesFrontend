@@ -54,3 +54,9 @@ ion-label ion-note {
   background-color: #ccc;
   margin: 10px 0;
 }
+
+.button-wrapper {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}

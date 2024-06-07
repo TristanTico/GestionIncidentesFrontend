@@ -15,16 +15,17 @@ import { useAuth } from "../../context/authContext";
 import { useSgi } from "../../context/sgiContext";
 import MenuIcon from "../MenuIcon";
 import "./style.css";
+import ListaRoles from "../ListaRoles";
 
 const CrearIncidencia: React.FC = () => {
-  const { nombrePrueba } = useAuth();
+  const { getTokenPayload } = useAuth();
   const { crearIncidencia } = useSgi();
   const [titulo, setTitulo] = useState("");
   const [lugar, setLugar] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
-
+  const datos = getTokenPayload();
   const handleSubmit = async () => {
     try {
       const res = await crearIncidencia({
@@ -50,11 +51,12 @@ const CrearIncidencia: React.FC = () => {
 
   return (
     <IonPage>
-      <MenuIcon nombreUsuario={nombrePrueba} />
+      <MenuIcon nombreUsuario={datos.nombre} />
       <IonContent color="light">
         <div className="header-container">
           <IonTitle className="page-title">Crear Incidencia</IonTitle>
         </div>
+        
         <div className="divider"></div>
         <form>
           <IonList inset={true}>

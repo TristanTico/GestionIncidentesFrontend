@@ -10,6 +10,10 @@ import {
   crearIncidenciaRequest,
   getIncidenciaRequest,
   getincidenciasXusuarioRequest,
+  getIncidenciasRegistradasRequest,
+  getIncidenciasAsignadasRequest,
+  actualizarEstadoRevisionRequest,
+  actualizarEstadoReparacionRequest
 } from "../api/incidencia.api";
 
 interface Incidencia {
@@ -18,13 +22,18 @@ interface Incidencia {
   ct_lugar: string;
   cd_fechaHora?: Date;
   ct_cod_incidencia?: string;
+  cn_cod_estado?: number;
 }
 
 interface SgiContextProps {
   incidencias: Incidencia[] | null;
   crearIncidencia: (incidencia: Incidencia) => Promise<any>;
   getIncidenciaXusuario: () => void;
+  getIncidenciasRegistradas: () => void;
+  getIncidenciasAsignadas: () => void;
   getIncidencia: (ct_cod_incidencia: string) => Promise<any>;
+  actualizarEstadoRevision: (ct_cod_incidencia : string) => Promise<any>;
+  actualizarEstadoReparacion: (ct_cod_incidencia : string) => Promise<any>;
 }
 
 interface SgiProviderProps {
@@ -63,6 +72,44 @@ export const SgiProvider = ({ children }: SgiProviderProps): JSX.Element => {
     }
   };
 
+  const getIncidenciasRegistradas = async () => {
+    try {
+      const res = await getIncidenciasRegistradasRequest();
+      setIncidencia(res.data);
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getIncidenciasAsignadas = async () => {
+    try {
+      const res = await getIncidenciasAsignadasRequest();
+      setIncidencia(res.data);
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const actualizarEstadoRevision = async (ct_cod_incidencia : string): Promise<any> => {
+    try {
+      const res = await actualizarEstadoRevisionRequest(ct_cod_incidencia);
+      return res;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const actualizarEstadoReparacion = async (ct_cod_incidencia : string): Promise<any> => {
+    try {
+      const res = await actualizarEstadoReparacionRequest(ct_cod_incidencia);
+      return res;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const getIncidencia = async (ct_cod_incidencia: string): Promise<any> => {
     try {
       const res = await getIncidenciaRequest(ct_cod_incidencia);
@@ -78,7 +125,11 @@ export const SgiProvider = ({ children }: SgiProviderProps): JSX.Element => {
         incidencias,
         crearIncidencia,
         getIncidenciaXusuario,
+        getIncidenciasRegistradas,
         getIncidencia,
+        getIncidenciasAsignadas,
+        actualizarEstadoRevision,
+        actualizarEstadoReparacion
       }}
     >
       {children}

@@ -13,13 +13,15 @@ import { useAuth } from "../context/authContext";
 import MenuIcon from "../components/MenuIcon";
 
 const Home: React.FC = () => {
-  const { nombrePrueba } = useAuth();
+  const { getTokenPayload } = useAuth();
+
+  const datos = getTokenPayload();
 
   //<IonButton onClick={handleLogout}>Logout</IonButton>
 
   return (
     <IonPage>
-      <MenuIcon nombreUsuario={nombrePrueba} />
+      <MenuIcon nombreUsuario={datos.nombre} />
       <IonContent fullscreen color="light"></IonContent>
     </IonPage>
   );

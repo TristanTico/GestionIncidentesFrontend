@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  IonButton,
   IonContent,
   IonHeader,
   IonIcon,
@@ -13,34 +14,24 @@ import {
 import { chevronForward } from "ionicons/icons";
 import { useSgi } from "../context/sgiContext";
 import { useAuth } from "../context/authContext";
-import IncidenciaModal, { InciModal } from "./incidencias/IncidenciaModal";
 
 import "./listado.css";
 import MenuIcon from "./MenuIcon";
 
-const ListadoIncidencias: React.FC = () => {
-  const {  getTokenPayload } = useAuth();
-  const [selectedIncidencia, setSelectedIncidencia] =
-    useState<InciModal | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
-
+const ListadoIncidenciasAsignadas: React.FC = () => {
+  const { getTokenPayload } = useAuth();
   const datos = getTokenPayload();
 
-  const { incidencias, getIncidenciaXusuario, getIncidencia } = useSgi();
+  const {
+    incidencias,
+    getIncidenciasAsignadas,
+    actualizarEstadoRevision,
+    actualizarEstadoReparacion,
+  } = useSgi();
 
   useEffect(() => {
-    getIncidenciaXusuario();
+    getIncidenciasAsignadas();
   }, []);
-
-  const getInci = async (ct_cod_incidencia: any) => {
-    try {
-      const res = await getIncidencia(ct_cod_incidencia);
-      setSelectedIncidencia(res.data);
-      setModalOpen(true);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const formatDate = (dateString: any) => {
     if (!dateString) return "Fecha no disponible";
@@ -50,6 +41,26 @@ const ListadoIncidencias: React.FC = () => {
       day: "numeric",
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const actualizarRevision = async (ct_cod_incidencia: any) => {
+    try {
+      const res = await actualizarEstadoRevision(ct_cod_incidencia);
+      console.log(res);
+      getIncidenciasAsignadas();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const actualizarReparacion = async (ct_cod_incidencia: any) => {
+    try {
+      const res = await actualizarEstadoReparacion(ct_cod_incidencia);
+      console.log(res);
+      getIncidenciasAsignadas();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -63,12 +74,7 @@ const ListadoIncidencias: React.FC = () => {
         <IonList inset={true}>
           {incidencias && incidencias.length > 0 ? (
             incidencias.map((incidencia, index) => (
-              <IonItem
-                button={true}
-                detail={false}
-                key={index}
-                onClick={() => getInci(incidencia.ct_cod_incidencia)}
-              >
+              <IonItem button={true} detail={false} key={index}>
                 <div className="unread-indicator-wrapper" slot="start">
                   <div className="unread-indicator"></div>
                 </div>
@@ -86,19 +92,40 @@ const ListadoIncidencias: React.FC = () => {
                   </IonNote>
                   <IonIcon color="medium" icon={chevronForward}></IonIcon>
                 </div>
+                <div className="button-wrapper">
+                  {incidencia.cn_cod_estado === 2 && (
+                    <IonButton
+                      color="primary"
+                      onClick={() =>
+                        actualizarRevision(incidencia.ct_cod_incidencia)
+                      }
+                    >
+                      Revisión
+                    </IonButton>
+                  )}
+                  {incidencia.cn_cod_estado === 3 && (
+                    <IonButton
+                      color="secondary"
+                      onClick={() =>
+                        actualizarReparacion(incidencia.ct_cod_incidencia)
+                      }
+                    >
+                      Reparación
+                    </IonButton>
+                  )}
+                  {incidencia.cn_cod_estado === 4 && (
+                    <IonButton color="warning">Diagnosticar</IonButton>
+                  )}
+                </div>
               </IonItem>
             ))
           ) : (
             <div>No hay incidencias</div>
           )}
         </IonList>
-        <IncidenciaModal
-          isOpen={modalOpen}
-          onClose={() => setModalOpen(false)}
-          inciModal={selectedIncidencia}
-        />
       </IonContent>
     </>
   );
-}
-export default ListadoIncidencias;
+};
+
+export default ListadoIncidenciasAsignadas;

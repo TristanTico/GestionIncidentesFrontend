@@ -49,6 +49,8 @@ import Menu from "./components/Menu";
 import { SgiProvider } from "./context/sgiContext";
 import ListadoIncidencias from "./components/ListadoIncidencias";
 import CrearIncidencia from "./components/incidencias/CrearIncidencia";
+import ListadoIncidenciasRegistradas from "./components/ListadoIncidenciasRegistradas";
+import ListadoIncidenciasAsignadas from "./components/ListadoIncidenciasAsignadas";
 
 setupIonicReact();
 
@@ -64,12 +66,12 @@ const App: React.FC = () => {
                 <Switch>
                   <Route path="/login" component={LoginComponent} />
                   <ProtectedRoute path="/home" component={Home} />
-                  <ProtectedRoute path="/pruebauno" component={Prueba1} />
-                  <ProtectedRoute path="/pruebados" component={Prueba2} />
                   <ProtectedRoute
                     path="/listadoIncidencias"
                     component={ListadoIncidencias}
                   />
+                  <ProtectedRoute path="/listarTecnico" component={ListadoIncidenciasAsignadas} />
+                  <ProtectedRoute path="/listarEncargado" component={ListadoIncidenciasRegistradas} />
                   <ProtectedRoute path="/crearIncidencia" component={CrearIncidencia} />
                 </Switch>
               </IonRouterOutlet>

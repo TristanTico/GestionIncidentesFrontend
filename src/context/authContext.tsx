@@ -1,6 +1,7 @@
 import React, { useEffect, createContext, useContext, useState, ReactNode } from "react";
 import Cookies from "js-cookie";
 import { login, recargarToken } from "../api/auth.api";
+import { jwtDecode } from "jwt-decode";
 
 interface Usuario {
   ct_correo: string;
@@ -13,8 +14,7 @@ interface AuthContextProps {
   isAuthenticated: boolean;
   loading: boolean;
   logout: () => void;
-  nombrePrueba: string;
-  correo : string
+  getTokenPayload: () => any;
 }
 
 interface AuthProviderProps {
@@ -33,16 +33,28 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const [nombrePrueba, setNombrePrueba] = useState("");
-  const [correo, setCorreo] = useState("");
+  const [token, setToken] = useState<string | null>(null);
+
+  
+  const decodeToken = (token: string) => {
+    try {
+      return jwtDecode(token);
+    } catch (error) {
+      console.error("Failed to decode token:", error);
+      return null;
+    }
+  };
+
+  
 
   const signin = async (usuario: Usuario): Promise<any> => {
     try {
       const res = await login(usuario);
       console.log(res);
+      const token = res.data.token;
+      Cookies.set("token", token);
+      setToken(token);
       setUsuario(res.data);
-      setNombrePrueba(res.data.nombre);
-      setCorreo(res.data.correo);
       setIsAuthenticated(true);
       console.log("Login isAuthenticated: ", isAuthenticated);
       return res;
@@ -65,10 +77,9 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
           setIsAuthenticated(false);
         } else {
           setIsAuthenticated(true);
+          setToken(token);
           setUsuario(res.data);
           console.log("Token refresh response: ", res.data);
-          setNombrePrueba(res.data.nombre);
-          setCorreo(res.data.correo);
         }
       } catch (error) {
         setIsAuthenticated(false);
@@ -83,9 +94,16 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     Cookies.remove("token");
     setUsuario(null);
     setIsAuthenticated(false);
-    setNombrePrueba("");
-    setCorreo("");
   };
+
+  
+  const getTokenPayload = () => {
+    if (!token) return null;
+    
+    return decodeToken(token);
+
+  };
+  
 
   return (
     <AuthContext.Provider
@@ -95,8 +113,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
         isAuthenticated,
         loading,
         logout,
-        nombrePrueba,
-        correo
+        getTokenPayload
       }}
     >
       {children}

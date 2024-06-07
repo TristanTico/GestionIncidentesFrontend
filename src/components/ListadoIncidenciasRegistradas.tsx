@@ -13,34 +13,20 @@ import {
 import { chevronForward } from "ionicons/icons";
 import { useSgi } from "../context/sgiContext";
 import { useAuth } from "../context/authContext";
-import IncidenciaModal, { InciModal } from "./incidencias/IncidenciaModal";
 
 import "./listado.css";
 import MenuIcon from "./MenuIcon";
 
-const ListadoIncidencias: React.FC = () => {
+const ListadoIncidenciasRegistradas: React.FC = () => {
   const {  getTokenPayload } = useAuth();
-  const [selectedIncidencia, setSelectedIncidencia] =
-    useState<InciModal | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
-
   const datos = getTokenPayload();
 
-  const { incidencias, getIncidenciaXusuario, getIncidencia } = useSgi();
+  const { incidencias, getIncidenciasRegistradas } = useSgi();
 
   useEffect(() => {
-    getIncidenciaXusuario();
+    getIncidenciasRegistradas();
   }, []);
 
-  const getInci = async (ct_cod_incidencia: any) => {
-    try {
-      const res = await getIncidencia(ct_cod_incidencia);
-      setSelectedIncidencia(res.data);
-      setModalOpen(true);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const formatDate = (dateString: any) => {
     if (!dateString) return "Fecha no disponible";
@@ -67,7 +53,6 @@ const ListadoIncidencias: React.FC = () => {
                 button={true}
                 detail={false}
                 key={index}
-                onClick={() => getInci(incidencia.ct_cod_incidencia)}
               >
                 <div className="unread-indicator-wrapper" slot="start">
                   <div className="unread-indicator"></div>
@@ -92,13 +77,8 @@ const ListadoIncidencias: React.FC = () => {
             <div>No hay incidencias</div>
           )}
         </IonList>
-        <IncidenciaModal
-          isOpen={modalOpen}
-          onClose={() => setModalOpen(false)}
-          inciModal={selectedIncidencia}
-        />
       </IonContent>
     </>
   );
 }
-export default ListadoIncidencias;
+export default ListadoIncidenciasRegistradas;
