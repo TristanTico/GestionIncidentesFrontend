@@ -13,8 +13,10 @@ import {
   getIncidenciasRegistradasRequest,
   getIncidenciasAsignadasRequest,
   actualizarEstadoRevisionRequest,
-  actualizarEstadoReparacionRequest
+  actualizarEstadoReparacionRequest,
 } from "../api/incidencia.api";
+
+import { crearDiagnosticoRequest } from "../api/diagnostico.api";
 
 interface Incidencia {
   ct_titulo: string;
@@ -25,15 +27,26 @@ interface Incidencia {
   cn_cod_estado?: number;
 }
 
+interface Diagnostico {
+  ct_descripcion: string;
+  cn_tiempoSolucion: string;
+  ct_observacion: string;
+}
+
 interface SgiContextProps {
   incidencias: Incidencia[] | null;
+  diagnosticos: Diagnostico[] | null;
   crearIncidencia: (incidencia: Incidencia) => Promise<any>;
+  crearDiagnostico: (
+    ct_cod_incidencia: string,
+    diagnostico: Diagnostico
+  ) => Promise<any>;
   getIncidenciaXusuario: () => void;
   getIncidenciasRegistradas: () => void;
   getIncidenciasAsignadas: () => void;
   getIncidencia: (ct_cod_incidencia: string) => Promise<any>;
-  actualizarEstadoRevision: (ct_cod_incidencia : string) => Promise<any>;
-  actualizarEstadoReparacion: (ct_cod_incidencia : string) => Promise<any>;
+  actualizarEstadoRevision: (ct_cod_incidencia: string) => Promise<any>;
+  actualizarEstadoReparacion: (ct_cod_incidencia: string) => Promise<any>;
 }
 
 interface SgiProviderProps {
@@ -50,6 +63,7 @@ export const useSgi = (): SgiContextProps => {
 
 export const SgiProvider = ({ children }: SgiProviderProps): JSX.Element => {
   const [incidencias, setIncidencia] = useState<Incidencia[] | null>(null);
+  const [diagnosticos, setDiagnosticos] = useState<Diagnostico[] | null>(null);
 
   const crearIncidencia = async (incidencias: Incidencia): Promise<any> => {
     try {
@@ -86,29 +100,33 @@ export const SgiProvider = ({ children }: SgiProviderProps): JSX.Element => {
     try {
       const res = await getIncidenciasAsignadasRequest();
       setIncidencia(res.data);
-      console.log(res.data);
+      //console.log(res.data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const actualizarEstadoRevision = async (ct_cod_incidencia : string): Promise<any> => {
+  const actualizarEstadoRevision = async (
+    ct_cod_incidencia: string
+  ): Promise<any> => {
     try {
       const res = await actualizarEstadoRevisionRequest(ct_cod_incidencia);
       return res;
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
-  const actualizarEstadoReparacion = async (ct_cod_incidencia : string): Promise<any> => {
+  const actualizarEstadoReparacion = async (
+    ct_cod_incidencia: string
+  ): Promise<any> => {
     try {
       const res = await actualizarEstadoReparacionRequest(ct_cod_incidencia);
       return res;
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const getIncidencia = async (ct_cod_incidencia: string): Promise<any> => {
     try {
@@ -119,17 +137,34 @@ export const SgiProvider = ({ children }: SgiProviderProps): JSX.Element => {
     }
   };
 
+  const crearDiagnostico = async (
+    ct_cod_incidencia: string,
+    diagnostico: Diagnostico
+  ): Promise<any> => {
+    try {
+      const res = await crearDiagnosticoRequest(ct_cod_incidencia, diagnostico);
+      console.log(res);
+      setDiagnosticos([res.data]);
+      return res;
+    } catch (error) {
+      console.log(error);
+      
+    }
+  };
+
   return (
     <SgiContext.Provider
       value={{
         incidencias,
+        diagnosticos,
         crearIncidencia,
         getIncidenciaXusuario,
         getIncidenciasRegistradas,
         getIncidencia,
         getIncidenciasAsignadas,
         actualizarEstadoRevision,
-        actualizarEstadoReparacion
+        actualizarEstadoReparacion,
+        crearDiagnostico,
       }}
     >
       {children}

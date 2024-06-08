@@ -60,3 +60,8 @@ ion-label ion-note {
   gap: 10px;
   margin-top: 10px;
 }
+
+.noIncidencias{
+  text-align: center;
+  color: red;
+}

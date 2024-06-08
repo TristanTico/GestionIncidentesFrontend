@@ -1,6 +1,12 @@
-import React, { useEffect, createContext, useContext, useState, ReactNode } from "react";
+import React, {
+  useEffect,
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+} from "react";
 import Cookies from "js-cookie";
-import { login, recargarToken } from "../api/auth.api";
+import { login, recargarToken, logoutRequest } from "../api/auth.api";
 import { jwtDecode } from "jwt-decode";
 
 interface Usuario {
@@ -14,6 +20,7 @@ interface AuthContextProps {
   isAuthenticated: boolean;
   loading: boolean;
   logout: () => void;
+  logout2: () => void;
   getTokenPayload: () => any;
 }
 
@@ -35,7 +42,6 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const [loading, setLoading] = useState<boolean>(true);
   const [token, setToken] = useState<string | null>(null);
 
-  
   const decodeToken = (token: string) => {
     try {
       return jwtDecode(token);
@@ -44,8 +50,6 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
       return null;
     }
   };
-
-  
 
   const signin = async (usuario: Usuario): Promise<any> => {
     try {
@@ -94,16 +98,25 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     Cookies.remove("token");
     setUsuario(null);
     setIsAuthenticated(false);
+    setToken(null);
   };
 
-  
+  const logout2 = async () => {
+    try {
+      await logoutRequest();
+      setUsuario(null);
+      setIsAuthenticated(false);
+      window.location.href = "/login";
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const getTokenPayload = () => {
     if (!token) return null;
-    
-    return decodeToken(token);
 
+    return decodeToken(token);
   };
-  
 
   return (
     <AuthContext.Provider
@@ -113,7 +126,8 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
         isAuthenticated,
         loading,
         logout,
-        getTokenPayload
+        logout2,
+        getTokenPayload,
       }}
     >
       {children}

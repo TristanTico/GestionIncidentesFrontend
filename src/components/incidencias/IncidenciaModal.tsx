@@ -11,7 +11,7 @@ import {
   IonLabel,
   IonInput,
 } from "@ionic/react";
-import { close } from "ionicons/icons";
+import { useAuth } from "../../context/authContext";
 import "./style.css";
 
 export interface InciModal {
@@ -41,6 +41,10 @@ const IncidenciaModal: React.FC<IncidenciaModalProps> = ({
   inciModal,
 }) => {
   if (!inciModal) return null;
+
+  const { getTokenPayload } = useAuth();
+  const datos = getTokenPayload();
+  const usuario = datos.roles.includes("Usuario");
 
   return (
     <IonModal isOpen={isOpen} onDidDismiss={onClose}>
@@ -106,9 +110,11 @@ const IncidenciaModal: React.FC<IncidenciaModalProps> = ({
           <IonLabel position="stacked">Categoría:</IonLabel>
           <IonInput value={inciModal.catagoria || "No asignado"} readonly />
         </IonItem>
-        <IonButton expand="block" color="primary">
-          Re Asignar
-        </IonButton>
+        {usuario && (
+          <IonButton expand="block" color="primary">
+            Re Asignar
+          </IonButton>
+        )}
       </IonContent>
     </IonModal>
   );

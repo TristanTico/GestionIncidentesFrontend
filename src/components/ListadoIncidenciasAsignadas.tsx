@@ -10,28 +10,69 @@ import {
   IonNote,
   IonText,
   IonTitle,
+  IonToast,
 } from "@ionic/react";
+import { eye } from "ionicons/icons";
 import { chevronForward } from "ionicons/icons";
 import { useSgi } from "../context/sgiContext";
 import { useAuth } from "../context/authContext";
+import ModalDiagnostico from "./diagnosticos/ModalDiagnostico";
 
 import "./listado.css";
 import MenuIcon from "./MenuIcon";
+import IncidenciaModal from "./incidencias/IncidenciaModal";
 
 const ListadoIncidenciasAsignadas: React.FC = () => {
   const { getTokenPayload } = useAuth();
   const datos = getTokenPayload();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedIncidencia, setSelectedIncidencia] = useState<any>(null);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
 
   const {
     incidencias,
     getIncidenciasAsignadas,
     actualizarEstadoRevision,
     actualizarEstadoReparacion,
+    crearDiagnostico,
+    getIncidencia,
   } = useSgi();
 
   useEffect(() => {
-    getIncidenciasAsignadas();
+    try {
+      getIncidenciasAsignadas();
+      setErrorMessage("");
+    } catch (error) {
+      setErrorMessage("No tienes incidencias asignadas");
+    }
   }, []);
+
+  const getInci = async (ct_cod_incidencia: any) => {
+    try {
+      const res = await getIncidencia(ct_cod_incidencia);
+      setSelectedIncidencia(res.data);
+      setModalOpen(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  /*
+  useEffect(() => {
+    const getIncidenciasAsignadas = async () => {
+      try {
+        getIncidenciasAsignadas();
+        setErrorMessage("");
+      } catch (error) {
+        setErrorMessage("No tienes incidencias");
+      }
+    };
+    getIncidenciasAsignadas();
+  }, [getIncidenciasAsignadas]);
+  */
 
   const formatDate = (dateString: any) => {
     if (!dateString) return "Fecha no disponible";
@@ -48,6 +89,8 @@ const ListadoIncidenciasAsignadas: React.FC = () => {
       const res = await actualizarEstadoRevision(ct_cod_incidencia);
       console.log(res);
       getIncidenciasAsignadas();
+      setToastMessage("Incidencia actualizada a estado Revision");
+      setShowToast(true);
     } catch (error) {
       console.log(error);
     }
@@ -58,11 +101,33 @@ const ListadoIncidenciasAsignadas: React.FC = () => {
       const res = await actualizarEstadoReparacion(ct_cod_incidencia);
       console.log(res);
       getIncidenciasAsignadas();
+      setToastMessage("Incidencia actualizada a estado Reparacion");
+      setShowToast(true);
     } catch (error) {
       console.log(error);
     }
   };
 
+  const abrirModalDiagnostico = (ct_cod_incidencia: any) => {
+    setSelectedIncidencia(ct_cod_incidencia);
+    setIsModalOpen(true);
+  };
+
+  const cerrarModalDiagnostico = () => {
+    setIsModalOpen(false);
+    setSelectedIncidencia(null);
+  };
+
+  const handleDiagnosticoSubmit = async (
+    ct_cod_incidencia: string,
+    diagnostico: any
+  ) => {
+    try {
+      await crearDiagnostico(ct_cod_incidencia, diagnostico);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       <MenuIcon nombreUsuario={datos.nombre} />
@@ -114,15 +179,49 @@ const ListadoIncidenciasAsignadas: React.FC = () => {
                     </IonButton>
                   )}
                   {incidencia.cn_cod_estado === 4 && (
-                    <IonButton color="warning">Diagnosticar</IonButton>
+                    <IonButton
+                      color="warning"
+                      onClick={() =>
+                        abrirModalDiagnostico(incidencia.ct_cod_incidencia)
+                      }
+                    >
+                      Diagnosticar
+                    </IonButton>
                   )}
+                  <IonButton
+                    color="info"
+                    onClick={() => getInci(incidencia.ct_cod_incidencia)}
+                  >
+                    <IonIcon icon={eye} slot="start" />
+                    Ver
+                  </IonButton>
                 </div>
+                <IonToast
+                  isOpen={showToast}
+                  onDidDismiss={() => setShowToast(false)}
+                  message={toastMessage}
+                  duration={1000}
+                />
               </IonItem>
             ))
           ) : (
-            <div>No hay incidencias</div>
+            <div className="noIncidencias">
+              {" "}
+              {errorMessage || "No tienes incidencias asignadas"}
+            </div>
           )}
         </IonList>
+        <ModalDiagnostico
+          isOpen={isModalOpen}
+          onClose={cerrarModalDiagnostico}
+          ct_cod_incidencia={selectedIncidencia}
+          onSubmit={handleDiagnosticoSubmit}
+        />
+        <IncidenciaModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          inciModal={selectedIncidencia}
+        />
       </IonContent>
     </>
   );

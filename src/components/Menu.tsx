@@ -36,7 +36,7 @@ interface AppPage {
 
 const Menu: React.FC = () => {
   const location = useLocation();
-  const { logout, isAuthenticated, getTokenPayload } = useAuth();
+  const { logout, isAuthenticated, getTokenPayload, logout2 } = useAuth();
   const [mostrarToast, setMostrarToast] = useState(false);
   const [mensajeToast, setMensajeToast] = useState("");
 
@@ -77,7 +77,7 @@ const Menu: React.FC = () => {
       children: datos.roles.includes("Encargado")
         ? [
             {
-              title: "Listar Encargado",
+              title: "Listar Incidencias Registradas",
               url: "/listarEncargado",
               iosIcon: mailOutline,
               mdIcon: mailSharp,
@@ -92,7 +92,7 @@ const Menu: React.FC = () => {
       children: datos.roles.includes("Tecnico")
         ? [
             {
-              title: "Listar Técnicos",
+              title: "Listar Incidencias Asignadas",
               url: "/listarTecnico",
               iosIcon: mailOutline,
               mdIcon: mailSharp,
@@ -104,7 +104,7 @@ const Menu: React.FC = () => {
       title: "Cerrar Sesión",
       iosIcon: logOutOutline,
       mdIcon: logOutSharp,
-      action: logout,
+      action: logout2,
     },
   ];
 
