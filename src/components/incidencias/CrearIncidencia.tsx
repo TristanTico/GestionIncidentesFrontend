@@ -98,7 +98,7 @@ const CrearIncidencia: React.FC = () => {
             isOpen={showToast}
             onDidDismiss={() => setShowToast(false)}
             message={toastMessage}
-            duration={4000}
+            duration={6000}
           />
         </form>
       </IonContent>

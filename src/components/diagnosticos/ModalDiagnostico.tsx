@@ -99,7 +99,7 @@ const ModalDiagnostico: React.FC<FormModalProps> = ({
             isOpen={showToast}
             onDidDismiss={() => setShowToast(false)}
             message={toastMessage}
-            duration={3000}
+            duration={7000}
           />
         </form>
       </IonContent>

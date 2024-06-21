@@ -54,7 +54,7 @@ const ListadoIncidenciasAsignadas: React.FC = () => {
     try {
       const res = await getIncidencia(ct_cod_incidencia);
       setSelectedIncidencia(res.data);
-      setModalOpen(true);
+      setModalOpen(true);    
     } catch (error) {
       console.log(error);
     }
@@ -77,11 +77,11 @@ const ListadoIncidenciasAsignadas: React.FC = () => {
   const formatDate = (dateString: any) => {
     if (!dateString) return "Fecha no disponible";
     const options: Intl.DateTimeFormatOptions = {
+      day: "2-digit",
+      month: "2-digit",
       year: "numeric",
-      month: "long",
-      day: "numeric",
     };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    return new Date(dateString).toLocaleDateString("es-ES", options);
   };
 
   const actualizarRevision = async (ct_cod_incidencia: any) => {

@@ -16,26 +16,50 @@ import { useAuth } from "../context/authContext";
 
 import "./listado.css";
 import MenuIcon from "./MenuIcon";
+import ModalAsignacion from "./ModalAsignacion";
 
 const ListadoIncidenciasRegistradas: React.FC = () => {
-  const {  getTokenPayload } = useAuth();
+  const { getTokenPayload } = useAuth();
   const datos = getTokenPayload();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedIncidencia, setSelectedIncidencia] = useState<any>(null);
 
-  const { incidencias, getIncidenciasRegistradas } = useSgi();
+  const { incidencias, getIncidenciasRegistradas, getIncidencia } = useSgi();
 
   useEffect(() => {
     getIncidenciasRegistradas();
   }, []);
 
+  /*
+  const getInci = async (ct_cod_incidencia: any) => {
+    try {
+      const res = await getIncidencia(ct_cod_incidencia);
+      setSelectedIncidencia(res.data);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  */
+
+  const abrirModalAsignacion = (ct_cod_incidencia: any) => {
+    setSelectedIncidencia(ct_cod_incidencia);
+    setIsModalOpen(true);
+  };
+
+  const cerrarModalDiagnostico = () => {
+    setIsModalOpen(false);
+    setSelectedIncidencia(null);
+  };
 
   const formatDate = (dateString: any) => {
     if (!dateString) return "Fecha no disponible";
     const options: Intl.DateTimeFormatOptions = {
+      day: "2-digit",
+      month: "2-digit",
       year: "numeric",
-      month: "long",
-      day: "numeric",
     };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    return new Date(dateString).toLocaleDateString("es-ES", options);
   };
 
   return (
@@ -53,6 +77,7 @@ const ListadoIncidenciasRegistradas: React.FC = () => {
                 button={true}
                 detail={false}
                 key={index}
+                onClick={() => abrirModalAsignacion(incidencia.ct_cod_incidencia)}
               >
                 <div className="unread-indicator-wrapper" slot="start">
                   <div className="unread-indicator"></div>
@@ -77,8 +102,13 @@ const ListadoIncidenciasRegistradas: React.FC = () => {
             <div>No hay incidencias</div>
           )}
         </IonList>
+        <ModalAsignacion
+          isOpen={isModalOpen}
+          onClose={cerrarModalDiagnostico}
+          ct_cod_incidencia={selectedIncidencia}
+        />
       </IonContent>
     </>
   );
-}
+};
 export default ListadoIncidenciasRegistradas;

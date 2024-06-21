@@ -14,7 +14,7 @@ import {
   IonToast,
 } from "@ionic/react";
 
-import { useLocation } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 import {
   mailOutline,
   mailSharp,
@@ -36,9 +36,11 @@ interface AppPage {
 
 const Menu: React.FC = () => {
   const location = useLocation();
+  //const history = useHistory(); 
   const { logout, isAuthenticated, getTokenPayload, logout2 } = useAuth();
   const [mostrarToast, setMostrarToast] = useState(false);
   const [mensajeToast, setMensajeToast] = useState("");
+  
 
   const datos = getTokenPayload() || { roles: [] };
 
@@ -222,7 +224,8 @@ const Menu: React.FC = () => {
           isOpen={mostrarToast}
           onDidDismiss={() => setMostrarToast(false)}
           message={mensajeToast}
-          duration={3000}
+          duration={7000}
+          color="warning"
         />
       </IonContent>
     </IonMenu>

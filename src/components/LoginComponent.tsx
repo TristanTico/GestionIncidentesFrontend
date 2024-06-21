@@ -85,6 +85,8 @@ const LoginComponent: React.FC = () => {
                   onDidDismiss={() => setShowToast(false)}
                   message={toastMessage}
                   duration={4000}
+                  color="success"
+                
                 />
               </form>
             </IonCardContent>

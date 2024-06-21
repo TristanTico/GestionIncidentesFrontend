@@ -45,11 +45,11 @@ const ListadoIncidencias: React.FC = () => {
   const formatDate = (dateString: any) => {
     if (!dateString) return "Fecha no disponible";
     const options: Intl.DateTimeFormatOptions = {
+      day: "2-digit",
+      month: "2-digit",
       year: "numeric",
-      month: "long",
-      day: "numeric",
     };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    return new Date(dateString).toLocaleDateString("es-ES", options);
   };
 
   return (

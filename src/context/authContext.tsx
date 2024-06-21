@@ -8,6 +8,7 @@ import React, {
 import Cookies from "js-cookie";
 import { login, recargarToken, logoutRequest } from "../api/auth.api";
 import { jwtDecode } from "jwt-decode";
+import { useHistory } from 'react-router-dom';
 
 interface Usuario {
   ct_correo: string;
@@ -41,6 +42,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [token, setToken] = useState<string | null>(null);
+  const history = useHistory();
 
   const decodeToken = (token: string) => {
     try {
@@ -107,6 +109,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
       setUsuario(null);
       setIsAuthenticated(false);
       window.location.href = "/login";
+      //history.push("/login");
     } catch (error) {
       console.log(error);
     }
