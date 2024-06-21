@@ -60,20 +60,6 @@ const ListadoIncidenciasAsignadas: React.FC = () => {
     }
   };
 
-  /*
-  useEffect(() => {
-    const getIncidenciasAsignadas = async () => {
-      try {
-        getIncidenciasAsignadas();
-        setErrorMessage("");
-      } catch (error) {
-        setErrorMessage("No tienes incidencias");
-      }
-    };
-    getIncidenciasAsignadas();
-  }, [getIncidenciasAsignadas]);
-  */
-
   const formatDate = (dateString: any) => {
     if (!dateString) return "Fecha no disponible";
     const options: Intl.DateTimeFormatOptions = {

@@ -99,6 +99,27 @@ const Menu: React.FC = () => {
               iosIcon: mailOutline,
               mdIcon: mailSharp,
             },
+            {
+              title: "Listado Diagnosticos",
+              url: "/listadoDiagnosticos",
+              iosIcon: mailOutline,
+              mdIcon: mailSharp,
+            },
+          ]
+        : [],
+    },
+    {
+      title: "Supervisor",
+      iosIcon: mailOutline,
+      mdIcon: mailSharp,
+      children: datos.roles.includes("Supervisor")
+        ? [
+            {
+              title: "Listar Incidencias Terminadas",
+              url: "/listadoSupervisor",
+              iosIcon: mailOutline,
+              mdIcon: mailSharp,
+            },
           ]
         : [],
     },

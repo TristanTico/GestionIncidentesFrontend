@@ -57,8 +57,9 @@ ion-label ion-note {
 
 .button-wrapper {
   display: flex;
-  gap: 10px;
-  margin-top: 10px;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 30px;
 }
 
 .noIncidencias{

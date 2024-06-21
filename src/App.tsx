@@ -51,6 +51,8 @@ import ListadoIncidencias from "./components/ListadoIncidencias";
 import CrearIncidencia from "./components/incidencias/CrearIncidencia";
 import ListadoIncidenciasRegistradas from "./components/ListadoIncidenciasRegistradas";
 import ListadoIncidenciasAsignadas from "./components/ListadoIncidenciasAsignadas";
+import ListaDiagnosticos from "./components/diagnosticos/ListaDiagnosticos";
+import ListaSupervisor from "./components/ListaSupervisor";
 
 setupIonicReact();
 
@@ -73,6 +75,8 @@ const App: React.FC = () => {
                   <ProtectedRoute path="/listarTecnico" component={ListadoIncidenciasAsignadas} />
                   <ProtectedRoute path="/listarEncargado" component={ListadoIncidenciasRegistradas} />
                   <ProtectedRoute path="/crearIncidencia" component={CrearIncidencia} />
+                  <ProtectedRoute path="/listadoDiagnosticos" component={ListaDiagnosticos} />
+                  <ProtectedRoute path="/listadoSupervisor" component={ListaSupervisor} />
                 </Switch>
               </IonRouterOutlet>
             </IonSplitPane>

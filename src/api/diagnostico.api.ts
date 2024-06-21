@@ -15,3 +15,11 @@ export const crearDiagnosticoRequest = async (
     diagnostico
   );
 };
+
+export const getDiagnosticoRequest = async () => {
+  return await axiosInstance.get(`/getDiagnosticos`);
+};
+
+export const actualizarEstadoTerminadoRequest = async (ct_cod_incidencia : string) => {
+  return await axiosInstance.put(`/actualizarEstadoTerminado/${ct_cod_incidencia}`);
+}

@@ -215,7 +215,7 @@ const ModalAsignacion: React.FC<FormModalProps> = ({
                 clearInput
                 type="number"
                 value={cn_costos === 0 ? "" : cn_costos}
-                onIonChange={(e) => setCnCostos(Number(e.detail.value))}
+                onIonInput={(e) => setCnCostos(Number(e.detail.value))}
               />
             </IonItem>
             <IonItem>
@@ -226,7 +226,7 @@ const ModalAsignacion: React.FC<FormModalProps> = ({
                 clearInput
                 type="number"
                 value={cn_duracion === 0 ? "" : cn_duracion}
-                onIonChange={(e) => setCnDuracion(Number(e.detail.value))}
+                onIonInput={(e) => setCnDuracion(Number(e.detail.value))}
               />
             </IonItem>
             <IonButton expand="block" onClick={handleAsignar}>
