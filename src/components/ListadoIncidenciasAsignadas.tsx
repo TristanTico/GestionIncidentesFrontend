@@ -34,6 +34,7 @@ const ListadoIncidenciasAsignadas: React.FC = () => {
 
   const {
     incidencias,
+    incidenciasAsignadas,
     getIncidenciasAsignadas,
     actualizarEstadoRevision,
     actualizarEstadoReparacion,
@@ -123,8 +124,8 @@ const ListadoIncidenciasAsignadas: React.FC = () => {
         </div>
         <div className="divider"></div>
         <IonList inset={true}>
-          {incidencias && incidencias.length > 0 ? (
-            incidencias.map((incidencia, index) => (
+          {incidenciasAsignadas && incidenciasAsignadas.length > 0 ? (
+            incidenciasAsignadas.map((incidencia, index) => (
               <IonItem button={true} detail={false} key={index}>
                 <div className="unread-indicator-wrapper" slot="start">
                   <div className="unread-indicator"></div>

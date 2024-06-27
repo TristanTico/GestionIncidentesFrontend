@@ -16,7 +16,7 @@ import {
   IonIcon,
   IonText,
 } from "@ionic/react";
-import { closeCircle, personCircleOutline } from "ionicons/icons"; // Importar el icono de usuario
+import { closeCircle, personCircleOutline } from "ionicons/icons";
 import { useSgi } from "../context/sgiContext";
 
 interface FormModalProps {
@@ -30,7 +30,12 @@ const ModalAsignacion: React.FC<FormModalProps> = ({
   onClose,
   ct_cod_incidencia,
 }) => {
-  const { getTecnicos, tecnicos, asignarIncidencia, getIncidenciasRegistradas } = useSgi();
+  const {
+    getTecnicos,
+    tecnicos,
+    asignarIncidencia,
+    getIncidenciasRegistradas,
+  } = useSgi();
   const [tecnicosSeleccionados, setTecnicosSeleccionados] = useState<any[]>([]);
   const [tecnicoSeleccionado, setTecnicoSeleccionado] = useState<string>("");
 
@@ -40,6 +45,13 @@ const ModalAsignacion: React.FC<FormModalProps> = ({
   const [ct_riesgo, setCtRiesgo] = useState<string>("");
   const [ct_afectacion, setCtAfectacion] = useState<string>("");
   const [ct_categoria, setCtCategoria] = useState<string>("");
+
+  const [errors, setErrors] = useState({
+    ct_prioridad: "",
+    ct_riesgo: "",
+    ct_afectacion: "",
+    ct_categoria: "",
+  });
 
   useEffect(() => {
     try {
@@ -74,7 +86,46 @@ const ModalAsignacion: React.FC<FormModalProps> = ({
     setTecnicosSeleccionados(updatedTecnicos);
   };
 
+  const validateSelect = (value: string, field: string, message: string) => {
+    if (!value) {
+      setErrors((prevErrors) => ({ ...prevErrors, [field]: message }));
+      return false;
+    }
+    setErrors((prevErrors) => ({ ...prevErrors, [field]: "" }));
+    return true;
+  };
+
   const handleAsignar = async () => {
+    const isPrioridadValid = validateSelect(
+      ct_prioridad,
+      "ct_prioridad",
+      "Seleccione una prioridad."
+    );
+    const isRiesgoValid = validateSelect(
+      ct_riesgo,
+      "ct_riesgo",
+      "Seleccione un riesgo."
+    );
+    const isAfectacionValid = validateSelect(
+      ct_afectacion,
+      "ct_afectacion",
+      "Seleccione una afectación."
+    );
+    const isCategoriaValid = validateSelect(
+      ct_categoria,
+      "ct_categoria",
+      "Seleccione una categoría."
+    );
+
+    if (
+      !isPrioridadValid ||
+      !isRiesgoValid ||
+      !isAfectacionValid ||
+      !isCategoriaValid
+    ) {
+      return;
+    }
+
     const asignacionData = {
       cn_costos: cn_costos || 0,
       cn_duracion: cn_duracion || 0,
@@ -91,6 +142,7 @@ const ModalAsignacion: React.FC<FormModalProps> = ({
 
     try {
       const result = await asignarIncidencia(ct_cod_incidencia, asignacionData);
+      limpiarForm();
       getIncidenciasRegistradas();
       console.log("Asignación creada exitosamente", result);
       onClose();
@@ -99,8 +151,29 @@ const ModalAsignacion: React.FC<FormModalProps> = ({
     }
   };
 
+  const limpiarForm = () => {
+    setTecnicosSeleccionados([]);
+    setCnCostos(0);
+    setCnDuracion(0);
+    setCtPrioridad("");
+    setCtRiesgo("");
+    setCtAfectacion("");
+    setCtCategoria("");
+    setErrors({
+      ct_prioridad: "",
+      ct_riesgo: "",
+      ct_afectacion: "",
+      ct_categoria: "",
+    });
+  };
+
+  const handleClose = () => {
+    limpiarForm();
+    onClose();
+  };
+
   return (
-    <IonModal isOpen={isOpen} onDidDismiss={onClose}>
+    <IonModal isOpen={isOpen} onDidDismiss={handleClose}>
       <IonHeader>
         <IonToolbar>
           <IonTitle>Asignar Incidencia</IonTitle>
@@ -158,12 +231,22 @@ const ModalAsignacion: React.FC<FormModalProps> = ({
                 placeholder="Seleccione la prioridad"
                 value={ct_prioridad}
                 onIonChange={(e) => setCtPrioridad(e.detail.value)}
+                onIonBlur={() =>
+                  validateSelect(
+                    ct_prioridad,
+                    "ct_prioridad",
+                    "Seleccione una prioridad."
+                  )
+                }
               >
                 <IonSelectOption value="Baja">Baja</IonSelectOption>
                 <IonSelectOption value="Media">Media</IonSelectOption>
                 <IonSelectOption value="Alta">Alta</IonSelectOption>
               </IonSelect>
             </IonItem>
+            {errors.ct_prioridad && (
+              <IonText color="danger">{errors.ct_prioridad}</IonText>
+            )}
             <IonItem>
               <IonSelect
                 aria-label="Riesgo"
@@ -171,12 +254,22 @@ const ModalAsignacion: React.FC<FormModalProps> = ({
                 placeholder="Seleccione el riesgo"
                 value={ct_riesgo}
                 onIonChange={(e) => setCtRiesgo(e.detail.value)}
+                onIonBlur={() =>
+                  validateSelect(
+                    ct_riesgo,
+                    "ct_riesgo",
+                    "Seleccione un riesgo."
+                  )
+                }
               >
                 <IonSelectOption value="Bajo">Bajo</IonSelectOption>
                 <IonSelectOption value="Medio">Medio</IonSelectOption>
                 <IonSelectOption value="Alto">Alto</IonSelectOption>
               </IonSelect>
             </IonItem>
+            {errors.ct_riesgo && (
+              <IonText color="danger">{errors.ct_riesgo}</IonText>
+            )}
             <IonItem>
               <IonSelect
                 aria-label="Afectacion"
@@ -184,12 +277,22 @@ const ModalAsignacion: React.FC<FormModalProps> = ({
                 placeholder="Seleccione la afectación"
                 value={ct_afectacion}
                 onIonChange={(e) => setCtAfectacion(e.detail.value)}
+                onIonBlur={() =>
+                  validateSelect(
+                    ct_afectacion,
+                    "ct_afectacion",
+                    "Seleccione una afectación."
+                  )
+                }
               >
                 <IonSelectOption value="Bajo">Bajo</IonSelectOption>
                 <IonSelectOption value="Medio">Medio</IonSelectOption>
                 <IonSelectOption value="Alto">Alto</IonSelectOption>
               </IonSelect>
             </IonItem>
+            {errors.ct_afectacion && (
+              <IonText color="danger">{errors.ct_afectacion}</IonText>
+            )}
             <IonItem>
               <IonSelect
                 aria-label="Categoria"
@@ -197,6 +300,13 @@ const ModalAsignacion: React.FC<FormModalProps> = ({
                 placeholder="Seleccione la categoría"
                 value={ct_categoria}
                 onIonChange={(e) => setCtCategoria(e.detail.value)}
+                onIonBlur={() =>
+                  validateSelect(
+                    ct_categoria,
+                    "ct_categoria",
+                    "Seleccione una categoría."
+                  )
+                }
               >
                 <IonSelectOption value="Reparación">Reparación</IonSelectOption>
                 <IonSelectOption value="Intervención por causa natural">
@@ -207,6 +317,9 @@ const ModalAsignacion: React.FC<FormModalProps> = ({
                 </IonSelectOption>
               </IonSelect>
             </IonItem>
+            {errors.ct_categoria && (
+              <IonText color="danger">{errors.ct_categoria}</IonText>
+            )}
             <IonItem>
               <IonInput
                 label="Costo"

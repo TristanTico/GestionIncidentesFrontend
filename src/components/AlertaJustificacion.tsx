@@ -13,6 +13,7 @@ import {
   IonList,
   IonToast,
 } from "@ionic/react";
+import { useSgi } from "../context/sgiContext";
 
 interface FormModalProps {
   isOpen: boolean;
@@ -28,8 +29,26 @@ const AlertaJustificacion: React.FC<FormModalProps> = ({
   onSubmit,
 }) => {
   const [ct_justificacionDeCierre, setCt_justificacionDeCierre] = useState("");
+  const [errors, setErrors] = useState({ct_justificacionDeCierre : ""});
+
+  const validateJustificacion = (ct_justificacionDeCierre: string) => {
+    let error = "";
+    if (!ct_justificacionDeCierre) error = "El campo de Justificación no puede estar vacío.";
+    else if (ct_justificacionDeCierre.length < 5) error = "El Justificación debe tener al menos 5 letras.";
+    else if (ct_justificacionDeCierre.length > 30) error = "El Justificación no puede tener más de 150 letras.";
+    else {
+      const ct_justificacionDeCierreRegex = /^[A-Za-z0-9\s]+$/;
+      if (!ct_justificacionDeCierreRegex.test(ct_justificacionDeCierre)) error = "El Justificación no puede contener caracteres especiales.";
+    }
+    setErrors((prevErrors) => ({ ...prevErrors, ct_justificacionDeCierre: error }));
+    return error === "";
+  };
 
   const handleSubmit = () => {
+    const isJustificacionValid = validateJustificacion(ct_justificacionDeCierre);
+    if(!isJustificacionValid) {
+      return;
+    }
     const justificacion = { ct_justificacionDeCierre };
     onSubmit(ct_cod_incidencia, justificacion);
     limpiarForm();
@@ -38,6 +57,7 @@ const AlertaJustificacion: React.FC<FormModalProps> = ({
 
   const limpiarForm = () => {
     setCt_justificacionDeCierre("");
+    setErrors({ ct_justificacionDeCierre: ""});
   };
 
   return (
@@ -55,14 +75,16 @@ const AlertaJustificacion: React.FC<FormModalProps> = ({
           <IonList inset={true}>
             <IonItem>
               <IonTextarea
-                label="Descripcion"
+                label="Justificación de cierre"
                 labelPlacement="floating"
-                placeholder="Digite la descripcion"
+                placeholder="Digite la justificación de cierre"
                 value={ct_justificacionDeCierre}
                 onIonInput={(e) => setCt_justificacionDeCierre(e.detail.value!)}
+                onIonBlur={() => validateJustificacion(ct_justificacionDeCierre)}
                 rows={5}
               />
             </IonItem>
+            {errors.ct_justificacionDeCierre && <p className="error-message">{errors.ct_justificacionDeCierre}</p>}
             <IonButton expand="block" onClick={handleSubmit}>
               Registrar
             </IonButton>

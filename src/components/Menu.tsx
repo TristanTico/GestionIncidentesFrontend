@@ -24,6 +24,7 @@ import {
 import "./Menu.css";
 import { useAuth } from "../context/authContext";
 import ListaRoles from "./ListaRoles";
+import logoSGI from "../assets/sgi2.png";
 
 interface AppPage {
   url?: string;
@@ -144,7 +145,7 @@ const Menu: React.FC = () => {
         <IonList id="inbox-list">
           <IonListHeader>
             <img
-              src="/sgi2.png"
+              src={logoSGI}
               alt="Logo"
               style={{ width: "40px", marginRight: "10px" }}
             />

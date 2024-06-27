@@ -15,7 +15,6 @@ import { useAuth } from "../../context/authContext";
 import { useSgi } from "../../context/sgiContext";
 import MenuIcon from "../MenuIcon";
 import "./style.css";
-import ListaRoles from "../ListaRoles";
 
 const CrearIncidencia: React.FC = () => {
   const { getTokenPayload } = useAuth();
@@ -23,10 +22,59 @@ const CrearIncidencia: React.FC = () => {
   const [titulo, setTitulo] = useState("");
   const [lugar, setLugar] = useState("");
   const [descripcion, setDescripcion] = useState("");
+  const [errors, setErrors] = useState({ titulo: "", lugar: "", descripcion: "" });
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const datos = getTokenPayload();
+
+  const validateTitulo = (titulo: string) => {
+    let error = "";
+    if (!titulo) error = "El campo de título no puede estar vacío.";
+    else if (titulo.length < 5) error = "El título debe tener al menos 5 letras.";
+    else if (titulo.length > 30) error = "El título no puede tener más de 30 letras.";
+    else {
+      const tituloRegex = /^[A-Za-z0-9\s]+$/;
+      if (!tituloRegex.test(titulo)) error = "El título no puede contener caracteres especiales.";
+    }
+    setErrors((prevErrors) => ({ ...prevErrors, titulo: error }));
+    return error === "";
+  };
+
+  const validateLugar = (lugar: string) => {
+    let error = "";
+    if (!lugar) error = "El campo de lugar no puede estar vacío.";
+    else if (lugar.length < 5) error = "El lugar debe tener al menos 5 letras.";
+    else if (lugar.length > 30) error = "El lugar no puede tener más de 30 letras.";
+    else {
+      const lugarRegex = /^[A-Za-z0-9\s]+$/;
+      if (!lugarRegex.test(lugar)) error = "El lugar no puede contener caracteres especiales.";
+    }
+    setErrors((prevErrors) => ({ ...prevErrors, lugar: error }));
+    return error === "";
+  };
+
+  const validateDescripcion = (descripcion: string) => {
+    let error = "";
+    if (!descripcion) error = "El campo de descripción no puede estar vacío.";
+    else if (descripcion.length < 5) error = "La descripción debe tener al menos 5 letras.";
+    else if (descripcion.length > 150) error = "La descripción no puede tener más de 150 letras.";
+    else {
+      const descripcionRegex = /^[A-Za-z0-9\s]+$/;
+      if (!descripcionRegex.test(descripcion)) error = "La descripción no puede contener caracteres especiales.";
+    }
+    setErrors((prevErrors) => ({ ...prevErrors, descripcion: error }));
+    return error === "";
+  };
+
   const handleSubmit = async () => {
+    const isTituloValid = validateTitulo(titulo);
+    const isLugarValid = validateLugar(lugar);
+    const isDescripcionValid = validateDescripcion(descripcion);
+
+    if (!isTituloValid || !isLugarValid || !isDescripcionValid) {
+      return;
+    }
+
     try {
       const res = await crearIncidencia({
         ct_titulo: titulo,
@@ -47,6 +95,7 @@ const CrearIncidencia: React.FC = () => {
     setTitulo("");
     setLugar("");
     setDescripcion("");
+    setErrors({ titulo: "", lugar: "", descripcion: "" });
   };
 
   return (
@@ -67,9 +116,11 @@ const CrearIncidencia: React.FC = () => {
                 placeholder="Digite el título"
                 value={titulo}
                 onIonInput={(e) => setTitulo(e.detail.value!)}
+                onIonBlur={() => validateTitulo(titulo)}
                 clearInput
               />
             </IonItem>
+            {errors.titulo && <p className="error-message">{errors.titulo}</p>}
             <IonItem>
               <IonInput
                 label="Lugar"
@@ -77,9 +128,11 @@ const CrearIncidencia: React.FC = () => {
                 placeholder="Digite el lugar"
                 value={lugar}
                 onIonInput={(e) => setLugar(e.detail.value!)}
+                onIonBlur={() => validateLugar(lugar)}
                 clearInput
               />
             </IonItem>
+            {errors.lugar && <p className="error-message">{errors.lugar}</p>}
             <IonItem>
               <IonTextarea
                 label="Descripción"
@@ -87,9 +140,11 @@ const CrearIncidencia: React.FC = () => {
                 placeholder="Digite la descripcion"
                 value={descripcion}
                 onIonInput={(e) => setDescripcion(e.detail.value!)}
+                onIonBlur={() => validateDescripcion(descripcion)}
                 rows={5}
               />
             </IonItem>
+            {errors.descripcion && <p className="error-message">{errors.descripcion}</p>}
             <IonButton expand="block" onClick={handleSubmit}>
               Registrar
             </IonButton>

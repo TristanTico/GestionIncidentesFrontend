@@ -56,6 +56,7 @@ interface SgiContextProps {
   tecnicos: any[] | null;
   tecnicoDiagnostico: any[] | null;
   incidenciasTerminadas: any[] | null;
+  incidenciasAsignadas: any[] | null;
   getTecnicos: () => void;
   getDiagnosticos: () => void;
   crearIncidencia: (incidencia: Incidencia) => Promise<any>;
@@ -103,6 +104,9 @@ export const SgiProvider = ({ children }: SgiProviderProps): JSX.Element => {
     null
   );
   const [incidenciasTerminadas, setIncidenciasTerminadas] = useState<
+    any[] | null
+  >(null);
+  const [incidenciasAsignadas, setIncidenciasAsignadas] = useState<
     any[] | null
   >(null);
 
@@ -170,7 +174,7 @@ export const SgiProvider = ({ children }: SgiProviderProps): JSX.Element => {
   const getIncidenciasAsignadas = async () => {
     try {
       const res = await getIncidenciasAsignadasRequest();
-      setIncidencia(res.data);
+      setIncidenciasAsignadas(res.data);
       //console.log(res.data);
     } catch (error) {
       console.log(error);
@@ -292,6 +296,7 @@ export const SgiProvider = ({ children }: SgiProviderProps): JSX.Element => {
         tecnicos,
         tecnicoDiagnostico,
         incidenciasTerminadas,
+        incidenciasAsignadas,
         getTecnicos,
         getDiagnosticos,
         crearIncidencia,

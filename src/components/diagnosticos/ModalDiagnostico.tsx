@@ -30,10 +30,42 @@ const ModalDiagnostico: React.FC<FormModalProps> = ({
   const [cn_tiempoSolucion, setCn_tiempoSolucion] = useState("");
   const [ct_descripcion, setCt_descripcion] = useState("");
   const [ct_observacion, setCt_observacion] = useState("");
+  const [errors, setErrors] = useState({cn_tiempoSolucion: "", ct_descripcion: "", ct_observacion: "" });
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
+  const validateDescripcion = (ct_descripcion: string) => {
+    let error = "";
+    if (!ct_descripcion) error = "El campo de Descripcion no puede estar vacío.";
+    else if (ct_descripcion.length < 5) error = "El Descripcion debe tener al menos 5 letras.";
+    else if (ct_descripcion.length > 30) error = "El Descripcion no puede tener más de 150 letras.";
+    else {
+      const descripcionRegex = /^[A-Za-z0-9\s]+$/;
+      if (!descripcionRegex.test(ct_descripcion)) error = "El Descripcion no puede contener caracteres especiales.";
+    }
+    setErrors((prevErrors) => ({ ...prevErrors, ct_descripcion: error }));
+    return error === "";
+  };
+
+  const validateObservacion = (ct_observacion: string) => {
+    let error = "";
+    if (!ct_observacion) error = "El campo de Observacion no puede estar vacío.";
+    else if (ct_observacion.length < 5) error = "El Observacion debe tener al menos 5 letras.";
+    else if (ct_observacion.length > 30) error = "El Observacion no puede tener más de 150 letras.";
+    else {
+      const observacionRegex = /^[A-Za-z0-9\s]+$/;
+      if (!observacionRegex.test(ct_observacion)) error = "El Observacion no puede contener caracteres especiales.";
+    }
+    setErrors((prevErrors) => ({ ...prevErrors, ct_observacion: error }));
+    return error === "";
+  };
+
   const handleSubmit = () => {
+    const isValidDescripcion = validateDescripcion(ct_descripcion);
+    const isValidObservacion = validateObservacion(ct_observacion);
+    if(!isValidDescripcion || !isValidObservacion){
+      return;
+    }
     const diagnostico = { ct_descripcion, cn_tiempoSolucion, ct_observacion };
     onSubmit(ct_cod_incidencia, diagnostico);
     setToastMessage("Diagnostico creado exitosamente");
@@ -45,10 +77,16 @@ const ModalDiagnostico: React.FC<FormModalProps> = ({
     setCn_tiempoSolucion("");
     setCt_descripcion("");
     setCt_observacion("");
+    setErrors({cn_tiempoSolucion: "", ct_descripcion: "", ct_observacion: "" });
+  };
+
+  const handleClose = () => {
+    limpiarForm();
+    onClose();
   };
 
   return (
-    <IonModal isOpen={isOpen} onDidDismiss={onClose}>
+    <IonModal isOpen={isOpen} onDidDismiss={handleClose}>
       <IonHeader>
         <IonToolbar>
           <IonTitle>Agregar Diagnostico</IonTitle>
@@ -77,9 +115,11 @@ const ModalDiagnostico: React.FC<FormModalProps> = ({
                 placeholder="Digite la descripcion"
                 value={ct_descripcion}
                 onIonInput={(e) => setCt_descripcion(e.detail.value!)}
+                onIonBlur={() => validateDescripcion(ct_descripcion)}
                 rows={5}
               />
             </IonItem>
+            {errors.ct_descripcion && <p className="error-message">{errors.ct_descripcion}</p>}
 
             <IonItem>
               <IonTextarea
@@ -88,9 +128,11 @@ const ModalDiagnostico: React.FC<FormModalProps> = ({
                 placeholder="Digite la observacion"
                 value={ct_observacion}
                 onIonInput={(e) => setCt_observacion(e.detail.value!)}
+                onIonBlur={() => validateObservacion(ct_observacion)}
                 rows={5}
               />
             </IonItem>
+            {errors.ct_observacion && <p className="error-message">{errors.ct_observacion}</p>}
             <IonButton expand="block" onClick={handleSubmit}>
               Registrar
             </IonButton>
