@@ -20,6 +20,16 @@ import {
   mailSharp,
   logOutOutline,
   logOutSharp,
+  createOutline,
+  createSharp,
+  homeOutline,
+  homeSharp,
+  personAddOutline,
+  personAddSharp,
+  listCircleOutline,
+  listCircleSharp,
+  hammerOutline,
+  hammerSharp
 } from "ionicons/icons";
 import "./Menu.css";
 import { useAuth } from "../context/authContext";
@@ -37,11 +47,10 @@ interface AppPage {
 
 const Menu: React.FC = () => {
   const location = useLocation();
-  //const history = useHistory(); 
+  //const history = useHistory();
   const { logout, isAuthenticated, getTokenPayload, logout2 } = useAuth();
   const [mostrarToast, setMostrarToast] = useState(false);
   const [mensajeToast, setMensajeToast] = useState("");
-  
 
   const datos = getTokenPayload() || { roles: [] };
 
@@ -49,77 +58,77 @@ const Menu: React.FC = () => {
     {
       title: "Home",
       url: "/home",
-      iosIcon: mailOutline,
-      mdIcon: mailSharp,
+      iosIcon: homeOutline,
+      mdIcon: homeSharp,
     },
     {
       title: "Usuario",
-      iosIcon: mailOutline,
-      mdIcon: mailSharp,
+      iosIcon: personAddOutline,
+      mdIcon: personAddSharp,
       children: datos.roles.includes("Usuario")
         ? [
             {
               title: "Crear Incidencia",
               url: "/crearIncidencia",
-              iosIcon: mailOutline,
-              mdIcon: mailSharp,
+              iosIcon: createOutline,
+              mdIcon: createSharp,
             },
             {
               title: "Listado de incidencias",
               url: "/listadoIncidencias",
-              iosIcon: mailOutline,
-              mdIcon: mailSharp,
+              iosIcon: listCircleOutline,
+              mdIcon: listCircleSharp,
             },
           ]
         : [],
     },
     {
       title: "Encargado",
-      iosIcon: mailOutline,
-      mdIcon: mailSharp,
+      iosIcon: personAddOutline,
+      mdIcon: personAddSharp,
       children: datos.roles.includes("Encargado")
         ? [
             {
               title: "Listar Incidencias Registradas",
               url: "/listarEncargado",
-              iosIcon: mailOutline,
-              mdIcon: mailSharp,
+              iosIcon: listCircleOutline,
+              mdIcon: listCircleSharp,
             },
           ]
         : [],
     },
     {
       title: "Tecnico",
-      iosIcon: mailOutline,
-      mdIcon: mailSharp,
+      iosIcon: personAddOutline,
+      mdIcon: personAddSharp,
       children: datos.roles.includes("Tecnico")
         ? [
             {
               title: "Listar Incidencias Asignadas",
               url: "/listarTecnico",
-              iosIcon: mailOutline,
-              mdIcon: mailSharp,
+              iosIcon: listCircleOutline,
+              mdIcon: listCircleSharp,
             },
             {
               title: "Listado Diagnosticos",
               url: "/listadoDiagnosticos",
-              iosIcon: mailOutline,
-              mdIcon: mailSharp,
+              iosIcon: listCircleOutline,
+              mdIcon: listCircleSharp,
             },
           ]
         : [],
     },
     {
       title: "Supervisor",
-      iosIcon: mailOutline,
-      mdIcon: mailSharp,
+      iosIcon: personAddOutline,
+      mdIcon: personAddSharp,
       children: datos.roles.includes("Supervisor")
         ? [
             {
               title: "Listar Incidencias Terminadas",
               url: "/listadoSupervisor",
-              iosIcon: mailOutline,
-              mdIcon: mailSharp,
+              iosIcon: listCircleOutline,
+              mdIcon: listCircleSharp,
             },
           ]
         : [],
@@ -158,7 +167,10 @@ const Menu: React.FC = () => {
               return (
                 <IonAccordionGroup key={index}>
                   <IonAccordion value={appPage.title}>
-                    <IonItem slot="header" onClick={() => handleUsuarioClick(appPage.title)}>
+                    <IonItem
+                      slot="header"
+                      onClick={() => handleUsuarioClick(appPage.title)}
+                    >
                       <IonIcon
                         aria-hidden="true"
                         slot="start"

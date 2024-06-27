@@ -110,7 +110,7 @@ const IncidenciaModal: React.FC<IncidenciaModalProps> = ({
           <IonLabel position="stacked">Categoría:</IonLabel>
           <IonInput value={inciModal.catagoria || "No asignado"} readonly />
         </IonItem>
-        {usuario && (
+        {usuario && inciModal.estado === "Cerrado" && (
           <IonButton expand="block" color="primary">
             Re Asignar
           </IonButton>

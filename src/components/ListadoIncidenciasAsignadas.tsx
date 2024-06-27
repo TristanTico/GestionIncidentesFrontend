@@ -55,7 +55,7 @@ const ListadoIncidenciasAsignadas: React.FC = () => {
     try {
       const res = await getIncidencia(ct_cod_incidencia);
       setSelectedIncidencia(res.data);
-      setModalOpen(true);    
+      setModalOpen(true);
     } catch (error) {
       console.log(error);
     }
@@ -74,10 +74,12 @@ const ListadoIncidenciasAsignadas: React.FC = () => {
   const actualizarRevision = async (ct_cod_incidencia: any) => {
     try {
       const res = await actualizarEstadoRevision(ct_cod_incidencia);
-      console.log(res);
-      getIncidenciasAsignadas();
-      setToastMessage("Incidencia actualizada a estado Revision");
-      setShowToast(true);
+      if (res.status === 200) {
+        getIncidenciasAsignadas();
+        setToastMessage("Incidencia actualizada a estado Revision");
+        setShowToast(true);
+        console.log(res);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -86,12 +88,16 @@ const ListadoIncidenciasAsignadas: React.FC = () => {
   const actualizarReparacion = async (ct_cod_incidencia: any) => {
     try {
       const res = await actualizarEstadoReparacion(ct_cod_incidencia);
-      console.log(res);
-      getIncidenciasAsignadas();
-      setToastMessage("Incidencia actualizada a estado Reparacion");
+      if (res.status === 200) {
+        console.log(res);
+        getIncidenciasAsignadas();
+        setToastMessage("Incidencia actualizada a estado Reparacion");
+        setShowToast(true);
+      }
+    } catch (error: any) {
+      setToastMessage(error.response.data.message);
       setShowToast(true);
-    } catch (error) {
-      console.log(error);
+      console.log(error.response.data.message);
     }
   };
 

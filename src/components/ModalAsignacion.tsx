@@ -262,9 +262,9 @@ const ModalAsignacion: React.FC<FormModalProps> = ({
                   )
                 }
               >
-                <IonSelectOption value="Bajo">Bajo</IonSelectOption>
-                <IonSelectOption value="Medio">Medio</IonSelectOption>
-                <IonSelectOption value="Alto">Alto</IonSelectOption>
+                <IonSelectOption value="Bajo">Baja</IonSelectOption>
+                <IonSelectOption value="Medio">Media</IonSelectOption>
+                <IonSelectOption value="Alto">Alta</IonSelectOption>
               </IonSelect>
             </IonItem>
             {errors.ct_riesgo && (
@@ -285,9 +285,9 @@ const ModalAsignacion: React.FC<FormModalProps> = ({
                   )
                 }
               >
-                <IonSelectOption value="Bajo">Bajo</IonSelectOption>
-                <IonSelectOption value="Medio">Medio</IonSelectOption>
-                <IonSelectOption value="Alto">Alto</IonSelectOption>
+                <IonSelectOption value="Bajo">Baja</IonSelectOption>
+                <IonSelectOption value="Medio">Media</IonSelectOption>
+                <IonSelectOption value="Alto">Alta</IonSelectOption>
               </IonSelect>
             </IonItem>
             {errors.ct_afectacion && (

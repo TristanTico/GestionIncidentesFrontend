@@ -42,6 +42,9 @@ interface Incidencia {
   cd_fechaHora?: Date;
   ct_cod_incidencia?: string;
   cn_cod_estado?: number;
+  t_estados: {
+    ct_descripcion: string;
+  };
 }
 
 interface Diagnostico {
@@ -237,7 +240,7 @@ export const SgiProvider = ({ children }: SgiProviderProps): JSX.Element => {
       const res = await actualizarEstadoReparacionRequest(ct_cod_incidencia);
       return res;
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   };
 

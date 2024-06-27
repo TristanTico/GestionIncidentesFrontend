@@ -9,6 +9,7 @@ import {
   IonNote,
   IonText,
   IonTitle,
+  IonSearchbar
 } from "@ionic/react";
 import { chevronForward } from "ionicons/icons";
 import { useSgi } from "../context/sgiContext";
@@ -19,10 +20,11 @@ import "./listado.css";
 import MenuIcon from "./MenuIcon";
 
 const ListadoIncidencias: React.FC = () => {
-  const {  getTokenPayload } = useAuth();
+  const { getTokenPayload } = useAuth();
   const [selectedIncidencia, setSelectedIncidencia] =
     useState<InciModal | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const datos = getTokenPayload();
 
@@ -52,6 +54,16 @@ const ListadoIncidencias: React.FC = () => {
     return new Date(dateString).toLocaleDateString("es-ES", options);
   };
 
+  // Ensure incidencias is not null
+  const filteredIncidencias = (incidencias || []).filter((incidencia) => {
+    return (
+      incidencia.ct_titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      incidencia.ct_lugar.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      incidencia.ct_descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      incidencia.t_estados.ct_descripcion.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
   return (
     <>
       <MenuIcon nombreUsuario={datos.nombre} />
@@ -60,9 +72,15 @@ const ListadoIncidencias: React.FC = () => {
           <IonTitle className="page-title">Listado de Incidencias</IonTitle>
         </div>
         <div className="divider"></div>
+        <IonSearchbar
+          color="light"
+          placeholder="Filtrar Incidencia"
+          value={searchTerm}
+          onIonInput={(e: any) => setSearchTerm(e.target.value)}
+        ></IonSearchbar>
         <IonList inset={true}>
-          {incidencias && incidencias.length > 0 ? (
-            incidencias.map((incidencia, index) => (
+          {filteredIncidencias && filteredIncidencias.length > 0 ? (
+            filteredIncidencias.map((incidencia, index) => (
               <IonItem
                 button={true}
                 detail={false}
@@ -92,11 +110,13 @@ const ListadoIncidencias: React.FC = () => {
             <div>No hay incidencias</div>
           )}
         </IonList>
-        <IncidenciaModal
-          isOpen={modalOpen}
-          onClose={() => setModalOpen(false)}
-          inciModal={selectedIncidencia}
-        />
+        {selectedIncidencia && (
+          <IncidenciaModal
+            isOpen={modalOpen}
+            onClose={() => setModalOpen(false)}
+            inciModal={selectedIncidencia}
+          />
+        )}
       </IonContent>
     </>
   );
