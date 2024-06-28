@@ -23,3 +23,7 @@ export const asignarIncidenciaRequest = async (
 export const getTecnicosRequest = async () => {
   return await axiosInstance.get("/getTecnicos");
 };
+
+export const getReporteCargaRequest = async () => {
+  return await axiosInstance.get("/getReporteCargaTrabajo");
+};

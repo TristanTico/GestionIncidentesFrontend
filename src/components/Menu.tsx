@@ -29,7 +29,9 @@ import {
   listCircleOutline,
   listCircleSharp,
   hammerOutline,
-  hammerSharp
+  hammerSharp,
+  analyticsOutline,
+  analyticsSharp
 } from "ionicons/icons";
 import "./Menu.css";
 import { useAuth } from "../context/authContext";
@@ -94,6 +96,12 @@ const Menu: React.FC = () => {
               iosIcon: listCircleOutline,
               mdIcon: listCircleSharp,
             },
+            {
+              title: "Cargas de Trabajo",
+              url: "/cargasTrabajo",
+              iosIcon: analyticsOutline,
+              mdIcon: analyticsSharp,
+            },
           ]
         : [],
     },
@@ -149,9 +157,9 @@ const Menu: React.FC = () => {
   };
 
   return isAuthenticated ? (
-    <IonMenu contentId="main" type="overlay">
-      <IonContent>
-        <IonList id="inbox-list">
+    <IonMenu contentId="main" type="overlay" >
+      <IonContent >
+        <IonList id="inbox-list" >
           <IonListHeader>
             <img
               src={logoSGI}

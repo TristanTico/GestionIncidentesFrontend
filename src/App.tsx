@@ -53,6 +53,7 @@ import ListadoIncidenciasRegistradas from "./components/ListadoIncidenciasRegist
 import ListadoIncidenciasAsignadas from "./components/ListadoIncidenciasAsignadas";
 import ListaDiagnosticos from "./components/diagnosticos/ListaDiagnosticos";
 import ListaSupervisor from "./components/ListaSupervisor";
+import ReporteCargaTrabajo from "./components/ReporteCargaTrabajo";
 
 setupIonicReact();
 
@@ -77,6 +78,8 @@ const App: React.FC = () => {
                   <ProtectedRoute path="/crearIncidencia" component={CrearIncidencia} />
                   <ProtectedRoute path="/listadoDiagnosticos" component={ListaDiagnosticos} />
                   <ProtectedRoute path="/listadoSupervisor" component={ListaSupervisor} />
+                  <ProtectedRoute path="/listadoSupervisor" component={ListaSupervisor} />
+                  <ProtectedRoute path="/cargasTrabajo" component={ReporteCargaTrabajo} />
                 </Switch>
               </IonRouterOutlet>
             </IonSplitPane>

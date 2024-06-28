@@ -11,14 +11,15 @@ import {
   IonTitle,
   IonToolbar,
   IonList,
-  IonToast
+  IonToast,
+  IonIcon
 } from "@ionic/react";
-
+import { cameraOutline } from "ionicons/icons";
 interface FormModalProps {
   isOpen: boolean;
   onClose: () => void;
   ct_cod_incidencia: any | null;
-  onSubmit: (ct_cod_incidencia: string, diagnostico: any) => void;
+  onSubmit: (ct_cod_incidencia: string, diagnostico: any, imagenes: File[]) => void;
 }
 
 const ModalDiagnostico: React.FC<FormModalProps> = ({
@@ -32,6 +33,7 @@ const ModalDiagnostico: React.FC<FormModalProps> = ({
   const [ct_observacion, setCt_observacion] = useState("");
   const [errors, setErrors] = useState({cn_tiempoSolucion: "", ct_descripcion: "", ct_observacion: "" });
   const [showToast, setShowToast] = useState(false);
+  const [imagenes, setImagenes] = useState<File[]>([]);
   const [toastMessage, setToastMessage] = useState("");
 
   const validateDescripcion = (ct_descripcion: string) => {
@@ -60,6 +62,13 @@ const ModalDiagnostico: React.FC<FormModalProps> = ({
     return error === "";
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      setImagenes(files);
+    }
+  };
+
   const handleSubmit = () => {
     const isValidDescripcion = validateDescripcion(ct_descripcion);
     const isValidObservacion = validateObservacion(ct_observacion);
@@ -67,7 +76,7 @@ const ModalDiagnostico: React.FC<FormModalProps> = ({
       return;
     }
     const diagnostico = { ct_descripcion, cn_tiempoSolucion, ct_observacion };
-    onSubmit(ct_cod_incidencia, diagnostico);
+    onSubmit(ct_cod_incidencia, diagnostico, imagenes);
     setToastMessage("Diagnostico creado exitosamente");
     setShowToast(true);
     limpiarForm();
@@ -77,6 +86,7 @@ const ModalDiagnostico: React.FC<FormModalProps> = ({
     setCn_tiempoSolucion("");
     setCt_descripcion("");
     setCt_observacion("");
+    setImagenes([]);
     setErrors({cn_tiempoSolucion: "", ct_descripcion: "", ct_observacion: "" });
   };
 
@@ -133,6 +143,16 @@ const ModalDiagnostico: React.FC<FormModalProps> = ({
               />
             </IonItem>
             {errors.ct_observacion && <p className="error-message">{errors.ct_observacion}</p>}
+            <IonItem>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                multiple
+              />
+              <IonIcon icon={cameraOutline} slot="start" />
+              <IonLabel>Agregar Imágenes</IonLabel>
+            </IonItem>
             <IonButton expand="block" onClick={handleSubmit}>
               Registrar
             </IonButton>

@@ -44,3 +44,8 @@ IonInput {
   margin-top: 0.5em;
 }
 
+.image-item {
+  margin-top: 20px;
+  margin-bottom: 20px; /* Ajusta este valor según el espacio deseado entre las imágenes */
+}
+

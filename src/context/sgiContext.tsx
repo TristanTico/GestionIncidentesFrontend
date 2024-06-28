@@ -13,18 +13,22 @@ import {
   getIncidenciasAsignadasRequest,
   actualizarEstadoRevisionRequest,
   actualizarEstadoReparacionRequest,
+  getImagenesIncidenciaRequest,
+  getTablaImagenesRequest,
 } from "../api/incidencia.api";
 
 import {
   crearDiagnosticoRequest,
   getDiagnosticoRequest,
   actualizarEstadoTerminadoRequest,
+  getImagenXdiagnosticoRequest,
 } from "../api/diagnostico.api";
 
 import {
   getTecnicosRequest,
   Encargado,
   asignarIncidenciaRequest,
+  getReporteCargaRequest,
 } from "../api/encargado.api";
 
 import {
@@ -42,7 +46,7 @@ interface Incidencia {
   cd_fechaHora?: Date;
   ct_cod_incidencia?: string;
   cn_cod_estado?: number;
-  t_estados: {
+  t_estados?: {
     ct_descripcion: string;
   };
 }
@@ -60,12 +64,18 @@ interface SgiContextProps {
   tecnicoDiagnostico: any[] | null;
   incidenciasTerminadas: any[] | null;
   incidenciasAsignadas: any[] | null;
+  reporteCargas: any[] | null;
+  imageUrls: any[] | null;
   getTecnicos: () => void;
+  getReporteCargas: () => void;
   getDiagnosticos: () => void;
-  crearIncidencia: (incidencia: Incidencia) => Promise<any>;
+  getTablaImagenes: () => void;
+  //crearIncidencia: (incidencia: Incidencia) => Promise<any>;
+  crearIncidencia: (incidencia: Incidencia, imagenes: File[]) => Promise<any>;
   crearDiagnostico: (
     ct_cod_incidencia: string,
-    diagnostico: Diagnostico
+    diagnostico: Diagnostico,
+    imagenes: File[]
   ) => Promise<any>;
   asignarIncidencia: (
     ct_cod_incidencia: string,
@@ -80,6 +90,8 @@ interface SgiContextProps {
   getIncidenciasAsignadas: () => void;
   getIncidenciasTerminadas: () => void;
   getIncidencia: (ct_cod_incidencia: string) => Promise<any>;
+  getImagenesIncidencia: (ct_cod_incidencia: string) => Promise<any>;
+  getImagenXDiagnostico: (cn_cod_diagnostico: number) => Promise<any>;
   actualizarEstadoRevision: (ct_cod_incidencia: string) => Promise<any>;
   actualizarEstadoReparacion: (ct_cod_incidencia: string) => Promise<any>;
   actualizarEstadoTerminado: (ct_cod_incidencia: string) => Promise<any>;
@@ -112,10 +124,29 @@ export const SgiProvider = ({ children }: SgiProviderProps): JSX.Element => {
   const [incidenciasAsignadas, setIncidenciasAsignadas] = useState<
     any[] | null
   >(null);
+  const [imageUrls, setImageUrls] = useState<any[] | null>(null);
+  const [reporteCargas, setReporteCargas] = useState<
+    any[] | null
+  >(null);
 
+  /*
   const crearIncidencia = async (incidencias: Incidencia): Promise<any> => {
     try {
       const res = await crearIncidenciaRequest(incidencias);
+      console.log(res);
+      setIncidencia([res.data]);
+      return res;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  */
+  const crearIncidencia = async (
+    incidencia: Incidencia,
+    imagenes: File[]
+  ): Promise<any> => {
+    try {
+      const res = await crearIncidenciaRequest(incidencia, imagenes);
       console.log(res);
       setIncidencia([res.data]);
       return res;
@@ -151,6 +182,40 @@ export const SgiProvider = ({ children }: SgiProviderProps): JSX.Element => {
       setTecnicoDiagnostico(res.data);
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const getTablaImagenes = async () => {
+    try {
+      const res = await getTablaImagenesRequest();
+      console.log(res.data);
+      setImageUrls(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getImagenesIncidencia = async (
+    ct_cod_incidencia: string
+  ): Promise<any> => {
+    try {
+      const res = await getImagenesIncidenciaRequest(ct_cod_incidencia);
+      console.log(res.data);
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const getImagenXDiagnostico = async (
+    cn_cod_diagnostico: any
+  ): Promise<any> => {
+    try {
+      const res = await getImagenXdiagnosticoRequest(cn_cod_diagnostico);
+      console.log(res.data);
+      return res;
+    } catch (error) {
+      throw error;
     }
   };
 
@@ -258,6 +323,8 @@ export const SgiProvider = ({ children }: SgiProviderProps): JSX.Element => {
   const getIncidencia = async (ct_cod_incidencia: string): Promise<any> => {
     try {
       const res = await getIncidenciaRequest(ct_cod_incidencia);
+      console.log(res.data);
+
       return res;
     } catch (error) {
       console.log(error);
@@ -266,10 +333,15 @@ export const SgiProvider = ({ children }: SgiProviderProps): JSX.Element => {
 
   const crearDiagnostico = async (
     ct_cod_incidencia: string,
-    diagnostico: Diagnostico
+    diagnostico: Diagnostico,
+    imagenes: File[]
   ): Promise<any> => {
     try {
-      const res = await crearDiagnosticoRequest(ct_cod_incidencia, diagnostico);
+      const res = await crearDiagnosticoRequest(
+        ct_cod_incidencia,
+        diagnostico,
+        imagenes
+      );
       console.log(res);
       setDiagnosticos([res.data]);
       return res;
@@ -291,6 +363,16 @@ export const SgiProvider = ({ children }: SgiProviderProps): JSX.Element => {
     }
   };
 
+  const getReporteCargas = async () => {
+    try {
+      const res = await getReporteCargaRequest();
+      console.log(res.data);
+      setReporteCargas(res.data);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   return (
     <SgiContext.Provider
       value={{
@@ -302,11 +384,14 @@ export const SgiProvider = ({ children }: SgiProviderProps): JSX.Element => {
         incidenciasAsignadas,
         getTecnicos,
         getDiagnosticos,
+        imageUrls,
+        getTablaImagenes,
         crearIncidencia,
         getIncidenciaXusuario,
         getIncidenciasRegistradas,
         getIncidenciasTerminadas,
         getIncidencia,
+        getImagenesIncidencia,
         getIncidenciasAsignadas,
         actualizarEstadoRevision,
         actualizarEstadoReparacion,
@@ -316,6 +401,9 @@ export const SgiProvider = ({ children }: SgiProviderProps): JSX.Element => {
         actualizarEstadoAprobado,
         actualizarEstadoRechazado,
         actualizarEstadoCerrado,
+        getImagenXDiagnostico,
+        reporteCargas,
+        getReporteCargas,
       }}
     >
       {children}

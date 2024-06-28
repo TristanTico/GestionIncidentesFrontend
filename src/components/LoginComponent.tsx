@@ -11,6 +11,7 @@ import {
   IonInput,
   IonButton,
   IonToast,
+  IonText,
 } from "@ionic/react";
 import { useAuth } from "../context/authContext";
 import "./ExploreContainer.css";
@@ -60,7 +61,8 @@ const LoginComponent: React.FC = () => {
     if (!contraseñaRegex.test(contraseña)) {
       setErrors((prevErrors) => ({
         ...prevErrors,
-        contraseña: "La contraseña solo puede contener letras, dígitos y el caracter '*'.",
+        contraseña:
+          "La contraseña solo puede contener letras, dígitos y el caracter '*'.",
       }));
       return false;
     }
@@ -101,7 +103,12 @@ const LoginComponent: React.FC = () => {
           <IonCard className="login-card">
             <IonCardHeader>
               <img src={logoSGI} alt="Login Image" className="login-image" />
-              <IonCardTitle className="centrarTitulo">Login</IonCardTitle>
+              <IonText color="secondary" style={{ textAlign: 'center' }}>
+                <h2>¡Bienvenido de vuelta!</h2>
+              </IonText>
+              <IonCardTitle className="centrarTitulo">
+                Inicia sesión en tu cuenta
+              </IonCardTitle>
             </IonCardHeader>
             <IonCardContent>
               <form>
@@ -115,7 +122,9 @@ const LoginComponent: React.FC = () => {
                     onIonBlur={() => validateCorreo(correo)}
                   />
                 </IonItem>
-                {errors.correo && <p className="error-message">{errors.correo}</p>}
+                {errors.correo && (
+                  <p className="error-message">{errors.correo}</p>
+                )}
                 <IonItem>
                   <IonLabel position="stacked">Contraseña</IonLabel>
                   <IonInput
@@ -126,13 +135,15 @@ const LoginComponent: React.FC = () => {
                     onIonBlur={() => validateContraseña(contraseña)}
                   />
                 </IonItem>
-                {errors.contraseña && <p className="error-message">{errors.contraseña}</p>}
+                {errors.contraseña && (
+                  <p className="error-message">{errors.contraseña}</p>
+                )}
                 <IonButton
                   expand="block"
                   className="ion-margin-top"
                   onClick={handleLogin}
                 >
-                  Login
+                  Iniciar sesión
                 </IonButton>
                 <IonToast
                   isOpen={showToast}

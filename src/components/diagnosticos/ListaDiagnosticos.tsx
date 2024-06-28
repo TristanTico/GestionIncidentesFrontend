@@ -10,11 +10,12 @@ import {
   IonText,
   IonTitle,
   IonButton,
+  IonToast,
 } from "@ionic/react";
-import { chevronForward } from "ionicons/icons";
+import { chevronForward, image } from "ionicons/icons";
 import { useSgi } from "../../context/sgiContext";
 import { useAuth } from "../../context/authContext";
-//import IncidenciaModal, { InciModal } from "./incidencias/IncidenciaModal";
+import ModalImagenesDiag, { ImagesdiagModal } from "./ModalImagenesDiag";
 
 //import "./listado.css";
 import "../listado.css";
@@ -22,12 +23,20 @@ import MenuIcon from "../MenuIcon";
 
 const ListaDiagnosticos: React.FC = () => {
   const { getTokenPayload } = useAuth();
-  //const [selectedIncidencia, setSelectedIncidencia] = useState<InciModal | null>(null);
+  const [selectedIncidenciaImages, setSelectedIncidenciaImages] =
+    useState<ImagesdiagModal | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
 
   const datos = getTokenPayload();
 
-  const { getDiagnosticos, tecnicoDiagnostico, actualizarEstadoTerminado } = useSgi();
+  const {
+    getDiagnosticos,
+    tecnicoDiagnostico,
+    actualizarEstadoTerminado,
+    getImagenXDiagnostico,
+  } = useSgi();
 
   useEffect(() => {
     getDiagnosticos();
@@ -53,6 +62,23 @@ const ListaDiagnosticos: React.FC = () => {
     }
   };
 
+  const getImagenDiag = async (cn_cod_diagnostico: any) => {
+    try {
+      const res = await getImagenXDiagnostico(cn_cod_diagnostico);
+      console.log("El cod", typeof cn_cod_diagnostico);
+
+      console.log("Data desde el listado", res.data);
+      setSelectedIncidenciaImages({
+        cn_cod_diagnostico,
+        ct_urlImagenes: res.data,
+      });
+      setModalOpen(true);
+    } catch (error: any) {
+      setToastMessage(error.response.data.message);
+      setShowToast(true);
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -87,15 +113,43 @@ const ListaDiagnosticos: React.FC = () => {
                 </div>
                 <div className="button-wrapper">
                   {incidencia.cn_cod_estado === 4 && (
-                    <IonButton color="primary" onClick={() => actualizarTerminado(incidencia.ct_cod_incidencia)}>Terminar</IonButton>
+                    <IonButton
+                      color="primary"
+                      onClick={() =>
+                        actualizarTerminado(incidencia.ct_cod_incidencia)
+                      }
+                    >
+                      Terminar
+                    </IonButton>
                   )}
+                  <IonButton
+                    color="secondary"
+                    onClick={() => getImagenDiag(incidencia.cn_cod_diagnostico)}
+                  >
+                    <IonIcon icon={image} slot="start" />
+                    Imágenes
+                  </IonButton>
                 </div>
+                <IonToast
+                  isOpen={showToast}
+                  onDidDismiss={() => setShowToast(false)}
+                  message={toastMessage}
+                  duration={1000}
+                  color="danger"
+                />
               </IonItem>
             ))
           ) : (
             <div>No hay diagnosticos</div>
           )}
         </IonList>
+        {selectedIncidenciaImages && (
+          <ModalImagenesDiag
+            isOpen={modalOpen}
+            onClose={() => setModalOpen(false)}
+            imagesdiagModal={selectedIncidenciaImages}
+          />
+        )}
       </IonContent>
     </>
   );

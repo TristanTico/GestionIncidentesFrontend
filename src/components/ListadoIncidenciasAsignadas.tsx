@@ -113,10 +113,11 @@ const ListadoIncidenciasAsignadas: React.FC = () => {
 
   const handleDiagnosticoSubmit = async (
     ct_cod_incidencia: string,
-    diagnostico: any
+    diagnostico: any,
+    imagenes: File[]
   ) => {
     try {
-      await crearDiagnostico(ct_cod_incidencia, diagnostico);
+      await crearDiagnostico(ct_cod_incidencia, diagnostico, imagenes);
     } catch (error) {
       console.log(error);
     }

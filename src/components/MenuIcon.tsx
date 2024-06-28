@@ -11,7 +11,7 @@ const MenuIcon: React.FC<MenuIconProps> = ({nombreUsuario}) => {
   const datos = getTokenPayload();
   return (
     <IonHeader>
-      <IonToolbar>
+      <IonToolbar color="tertiary">
         <IonButtons>
           <IonMenuButton />
         </IonButtons>

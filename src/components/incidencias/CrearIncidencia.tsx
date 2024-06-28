@@ -9,8 +9,10 @@ import {
   IonTextarea,
   IonToast,
   IonTitle,
+  IonLabel,
+  IonIcon
 } from "@ionic/react";
-
+import { cameraOutline } from "ionicons/icons";
 import { useAuth } from "../../context/authContext";
 import { useSgi } from "../../context/sgiContext";
 import MenuIcon from "../MenuIcon";
@@ -25,6 +27,7 @@ const CrearIncidencia: React.FC = () => {
   const [errors, setErrors] = useState({ titulo: "", lugar: "", descripcion: "" });
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [imagenes, setImagenes] = useState<File[]>([]);
   const datos = getTokenPayload();
 
   const validateTitulo = (titulo: string) => {
@@ -66,6 +69,13 @@ const CrearIncidencia: React.FC = () => {
     return error === "";
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      setImagenes(files);
+    }
+  };
+
   const handleSubmit = async () => {
     const isTituloValid = validateTitulo(titulo);
     const isLugarValid = validateLugar(lugar);
@@ -76,11 +86,14 @@ const CrearIncidencia: React.FC = () => {
     }
 
     try {
-      const res = await crearIncidencia({
-        ct_titulo: titulo,
-        ct_descripcion: descripcion,
-        ct_lugar: lugar,
-      });
+      const res = await crearIncidencia(
+        {
+          ct_titulo: titulo,
+          ct_descripcion: descripcion,
+          ct_lugar: lugar,
+        },
+        imagenes
+      );
       if (res.status === 201) {
         setToastMessage(res.data.message);
         setShowToast(true);
@@ -95,6 +108,7 @@ const CrearIncidencia: React.FC = () => {
     setTitulo("");
     setLugar("");
     setDescripcion("");
+    setImagenes([]);
     setErrors({ titulo: "", lugar: "", descripcion: "" });
   };
 
@@ -145,6 +159,16 @@ const CrearIncidencia: React.FC = () => {
               />
             </IonItem>
             {errors.descripcion && <p className="error-message">{errors.descripcion}</p>}
+            <IonItem>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                multiple
+              />
+              <IonIcon icon={cameraOutline} slot="start" />
+              <IonLabel>Agregar Imágenes</IonLabel>
+            </IonItem>
             <IonButton expand="block" onClick={handleSubmit}>
               Registrar
             </IonButton>
