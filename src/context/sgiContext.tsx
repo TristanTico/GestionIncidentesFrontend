@@ -243,7 +243,7 @@ export const SgiProvider = ({ children }: SgiProviderProps): JSX.Element => {
     try {
       const res = await getIncidenciasAsignadasRequest();
       setIncidenciasAsignadas(res.data);
-      //console.log(res.data);
+      console.log(res.data);
     } catch (error) {
       console.log(error);
     }

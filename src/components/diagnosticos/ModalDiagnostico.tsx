@@ -40,7 +40,7 @@ const ModalDiagnostico: React.FC<FormModalProps> = ({
     let error = "";
     if (!ct_descripcion) error = "El campo de Descripcion no puede estar vacío.";
     else if (ct_descripcion.length < 5) error = "El Descripcion debe tener al menos 5 letras.";
-    else if (ct_descripcion.length > 30) error = "El Descripcion no puede tener más de 150 letras.";
+    else if (ct_descripcion.length > 150) error = "El Descripcion no puede tener más de 150 letras.";
     else {
       const descripcionRegex = /^[A-Za-z0-9\s]+$/;
       if (!descripcionRegex.test(ct_descripcion)) error = "El Descripcion no puede contener caracteres especiales.";
@@ -53,7 +53,7 @@ const ModalDiagnostico: React.FC<FormModalProps> = ({
     let error = "";
     if (!ct_observacion) error = "El campo de Observacion no puede estar vacío.";
     else if (ct_observacion.length < 5) error = "El Observacion debe tener al menos 5 letras.";
-    else if (ct_observacion.length > 30) error = "El Observacion no puede tener más de 150 letras.";
+    else if (ct_observacion.length > 150) error = "El Observacion no puede tener más de 150 letras.";
     else {
       const observacionRegex = /^[A-Za-z0-9\s]+$/;
       if (!observacionRegex.test(ct_observacion)) error = "El Observacion no puede contener caracteres especiales.";

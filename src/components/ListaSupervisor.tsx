@@ -11,20 +11,32 @@ import {
   IonTitle,
   IonButton,
   IonToast,
+  IonSearchbar,
 } from "@ionic/react";
-import { chevronForward } from "ionicons/icons";
+import { chevronForward, image } from "ionicons/icons";
 import { useSgi } from "../context/sgiContext";
 import { useAuth } from "../context/authContext";
 import "./listado.css";
 import MenuIcon from "./MenuIcon";
 import AlertaJustificacion from "./AlertaJustificacion";
+import IncidenciaModal from "./incidencias/IncidenciaModal";
+import ModalImagenesInci, {
+  ImagesInciModal,
+} from "./incidencias/ModalImagenesInci";
 
 const ListaSupervisor: React.FC = () => {
   const { getTokenPayload } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
+  const [ismodalOpen, setIsModalOpen] = useState(false);
   const [selectedIncidencia, setSelectedIncidencia] = useState<any>(null);
+  const [selectedIncidenciaDeta, setSelectedIncidenciaDeta] =
+    useState<any>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedIncidenciaImages, setSelectedIncidenciaImages] =
+    useState<ImagesInciModal | null>(null);
+  const [modalOpenImage, setModalOpenImage] = useState(false);
 
   const datos = getTokenPayload();
 
@@ -34,6 +46,8 @@ const ListaSupervisor: React.FC = () => {
     actualizarEstadoAprobado,
     actualizarEstadoRechazado,
     actualizarEstadoCerrado,
+    getIncidencia,
+    getImagenesIncidencia,
   } = useSgi();
 
   useEffect(() => {
@@ -106,6 +120,48 @@ const ListaSupervisor: React.FC = () => {
     }
   };
 
+  const filteredIncidencias = (incidenciasTerminadas || []).filter(
+    (incidencia) => {
+      return (
+        incidencia.ct_titulo
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        incidencia.ct_lugar?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        incidencia.ct_descripcion
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        incidencia.t_estados?.ct_descripcion
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      );
+    }
+  );
+
+  const getInci = async (ct_cod_incidencia: any) => {
+    try {
+      const res = await getIncidencia(ct_cod_incidencia);
+      setSelectedIncidenciaDeta(res.data);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getInciImages = async (ct_cod_incidencia: any) => {
+    try {
+      const res = await getImagenesIncidencia(ct_cod_incidencia);
+      setSelectedIncidenciaImages({
+        ct_cod_incidencia,
+        ct_urlImagenes: res.data,
+      });
+      setModalOpenImage(true);
+    } catch (error: any) {
+      setToastMessage(error.response.data.message);
+      setShowToast(true);
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <MenuIcon nombreUsuario={datos.nombre} />
@@ -114,9 +170,15 @@ const ListaSupervisor: React.FC = () => {
           <IonTitle className="page-title">Listado de Incidencias</IonTitle>
         </div>
         <div className="divider"></div>
+        <IonSearchbar
+          color="light"
+          placeholder="Filtrar Incidencia"
+          value={searchTerm}
+          onIonInput={(e: any) => setSearchTerm(e.target.value)}
+        ></IonSearchbar>
         <IonList inset={true}>
-          {incidenciasTerminadas && incidenciasTerminadas.length > 0 ? (
-            incidenciasTerminadas.map((incidencia, index) => (
+          {filteredIncidencias && filteredIncidencias.length > 0 ? (
+            filteredIncidencias.map((incidencia, index) => (
               <IonItem button={true} detail={false} key={index}>
                 <div className="unread-indicator-wrapper" slot="start">
                   <div className="unread-indicator"></div>
@@ -166,6 +228,19 @@ const ListaSupervisor: React.FC = () => {
                       Cerrar
                     </IonButton>
                   )}
+                  <IonButton
+                    color="light"
+                    onClick={() => getInci(incidencia.ct_cod_incidencia)}
+                  >
+                    Detalles
+                  </IonButton>
+                  <IonButton
+                    color="secondary"
+                    onClick={() => getInciImages(incidencia.ct_cod_incidencia)}
+                  >
+                    <IonIcon icon={image} slot="start" />
+                    Imágenes
+                  </IonButton>
                 </div>
               </IonItem>
             ))
@@ -185,6 +260,20 @@ const ListaSupervisor: React.FC = () => {
           message={toastMessage}
           duration={7000}
         />
+        {selectedIncidenciaDeta && (
+          <IncidenciaModal
+            isOpen={ismodalOpen}
+            onClose={() => setIsModalOpen(false)}
+            inciModal={selectedIncidenciaDeta}
+          />
+        )}
+        {selectedIncidenciaImages && (
+          <ModalImagenesInci
+            isOpen={modalOpenImage}
+            onClose={() => setModalOpenImage(false)}
+            imagesInciModal={selectedIncidenciaImages}
+          />
+        )}
       </IonContent>
     </>
   );

@@ -9,6 +9,7 @@ import {
   IonNote,
   IonText,
   IonTitle,
+  IonSearchbar,
 } from "@ionic/react";
 import { chevronForward } from "ionicons/icons";
 import { useSgi } from "../context/sgiContext";
@@ -23,6 +24,7 @@ const ListadoIncidenciasRegistradas: React.FC = () => {
   const datos = getTokenPayload();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedIncidencia, setSelectedIncidencia] = useState<any>(null);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const { incidencias, getIncidenciasRegistradas, getIncidencia } = useSgi();
 
@@ -62,6 +64,16 @@ const ListadoIncidenciasRegistradas: React.FC = () => {
     return new Date(dateString).toLocaleDateString("es-ES", options);
   };
 
+  const filteredIncidencias = (incidencias || []).filter((incidencia) => {
+    return (
+      incidencia.ct_titulo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      incidencia.ct_lugar?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      incidencia.ct_descripcion
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    );
+  });
+
   return (
     <>
       <MenuIcon nombreUsuario={datos.nombre} />
@@ -70,9 +82,15 @@ const ListadoIncidenciasRegistradas: React.FC = () => {
           <IonTitle className="page-title">Listado de Incidencias</IonTitle>
         </div>
         <div className="divider"></div>
+        <IonSearchbar
+          color="light"
+          placeholder="Filtrar Incidencia"
+          value={searchTerm}
+          onIonInput={(e: any) => setSearchTerm(e.target.value)}
+        ></IonSearchbar>
         <IonList inset={true}>
-          {incidencias && incidencias.length > 0 ? (
-            incidencias.map((incidencia, index) => (
+          {filteredIncidencias && filteredIncidencias.length > 0 ? (
+            filteredIncidencias.map((incidencia, index) => (
               <IonItem
                 button={true}
                 detail={false}

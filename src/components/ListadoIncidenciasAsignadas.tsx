@@ -11,12 +11,14 @@ import {
   IonText,
   IonTitle,
   IonToast,
+  IonSearchbar
 } from "@ionic/react";
-import { eye } from "ionicons/icons";
+import { eye, image } from "ionicons/icons";
 import { chevronForward } from "ionicons/icons";
 import { useSgi } from "../context/sgiContext";
 import { useAuth } from "../context/authContext";
 import ModalDiagnostico from "./diagnosticos/ModalDiagnostico";
+import ModalImagenesInci, { ImagesInciModal } from "./incidencias/ModalImagenesInci";
 
 import "./listado.css";
 import MenuIcon from "./MenuIcon";
@@ -31,6 +33,10 @@ const ListadoIncidenciasAsignadas: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedIncidenciaImages, setSelectedIncidenciaImages] =
+    useState<ImagesInciModal | null>(null);
+  const [modalOpenImage, setModalOpenImage] = useState(false);
 
   const {
     incidencias,
@@ -40,6 +46,7 @@ const ListadoIncidenciasAsignadas: React.FC = () => {
     actualizarEstadoReparacion,
     crearDiagnostico,
     getIncidencia,
+    getImagenesIncidencia
   } = useSgi();
 
   useEffect(() => {
@@ -122,6 +129,30 @@ const ListadoIncidenciasAsignadas: React.FC = () => {
       console.log(error);
     }
   };
+  const filteredIncidencias = (incidenciasAsignadas || []).filter((incidencia) => {
+    return (
+      incidencia.ct_titulo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      incidencia.ct_lugar?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      incidencia.ct_descripcion
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+        incidencia.t_estados?.ct_descripcion.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+  const getInciImages = async (ct_cod_incidencia: any) => {
+    try {
+      const res = await getImagenesIncidencia(ct_cod_incidencia);
+      setSelectedIncidenciaImages({
+        ct_cod_incidencia,
+        ct_urlImagenes: res.data,
+      });
+      setModalOpenImage(true);
+    } catch (error: any) {
+      setToastMessage(error.response.data.message);
+      setShowToast(true);
+      console.log(error);
+    }
+  };
   return (
     <>
       <MenuIcon nombreUsuario={datos.nombre} />
@@ -130,9 +161,15 @@ const ListadoIncidenciasAsignadas: React.FC = () => {
           <IonTitle className="page-title">Listado de Incidencias</IonTitle>
         </div>
         <div className="divider"></div>
+        <IonSearchbar
+          color="light"
+          placeholder="Filtrar Incidencia"
+          value={searchTerm}
+          onIonInput={(e: any) => setSearchTerm(e.target.value)}
+        ></IonSearchbar>
         <IonList inset={true}>
-          {incidenciasAsignadas && incidenciasAsignadas.length > 0 ? (
-            incidenciasAsignadas.map((incidencia, index) => (
+          {filteredIncidencias && filteredIncidencias.length > 0 ? (
+            filteredIncidencias.map((incidencia, index) => (
               <IonItem button={true} detail={false} key={index}>
                 <div className="unread-indicator-wrapper" slot="start">
                   <div className="unread-indicator"></div>
@@ -189,6 +226,13 @@ const ListadoIncidenciasAsignadas: React.FC = () => {
                     <IonIcon icon={eye} slot="start" />
                     Ver
                   </IonButton>
+                  <IonButton
+                    color="secondary"
+                    onClick={() => getInciImages(incidencia.ct_cod_incidencia)}
+                  >
+                    <IonIcon icon={image} slot="start" />
+                    Imágenes
+                  </IonButton>
                 </div>
                 <IonToast
                   isOpen={showToast}
@@ -216,6 +260,13 @@ const ListadoIncidenciasAsignadas: React.FC = () => {
           onClose={() => setModalOpen(false)}
           inciModal={selectedIncidencia}
         />
+        {selectedIncidenciaImages && (
+          <ModalImagenesInci
+            isOpen={modalOpenImage}
+            onClose={() => setModalOpenImage(false)}
+            imagesInciModal={selectedIncidenciaImages}
+          />
+        )}
       </IonContent>
     </>
   );
